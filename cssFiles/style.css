@@ -15,7 +15,7 @@
   --gold: #C9952A;
   --gold-light: #E8B84B;
   --gold-pale: #F5D98A;
-  --gold-dark: #8B6510;
+  --gold-dark: #B18E62;
   --cream: #FBF6EC;
   --warm-white: #FFFDF7;
   --charcoal: #1C1A14;
@@ -606,7 +606,7 @@ em {
 .bar-img {
   border-radius: 8px;
   width: 60px;
-  height: 36px;
+  height: 30px;
 }
 
 /* ============================
@@ -765,7 +765,7 @@ em {
   font-weight: 500;
 }
 
-.asset-icon {
+.asset-icon img {
   width: 64px;
   height: 64px;
   background: rgba(255, 255, 255, 0.1);
@@ -778,7 +778,7 @@ em {
   transition: all 0.2s;
 }
 
-.asset-type:hover .asset-icon {
+.asset-type:hover .asset-icon img {
   background: rgba(245, 217, 138, 0.15);
   transform: translateY(-4px);
 }
@@ -1201,10 +1201,10 @@ td.bold {
 }
 
 .bar-big-img {
-  width: 200px;
-  height: 130px;
+  width: 250px;
+  height: 120px;
   object-fit: cover;
-  border-radius: 12px;
+  border-radius: 30px;
   box-shadow: 0 8px 32px rgba(201, 149, 42, 0.25);
   border: 2px solid var(--gold-pale);
 }
