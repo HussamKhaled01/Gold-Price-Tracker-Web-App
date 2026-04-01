@@ -1,9 +1,4 @@
-/* ============================
-   GOLDVAULT – app.js
-   Gold Price Tracker
-   ============================ */
-
-// ── CONFIG ──────────────────────────────────────────────────────
+// ---- CONFIG ------------------------------------------------------------------------------------------------------------
 var GOLD_API_KEY = 'goldapi-4cglcw2tl8goh-io'; // Replace with your key from gold-api.com
 var GOLD_API_URL = 'https://api.gold-api.com/price/XAU';
 
@@ -32,13 +27,13 @@ var BAR_SIZES = [
   { name: '1 kg',     weight: 1000  },
 ];
 
-// ── STATE ────────────────────────────────────────────────────────
+// ---- STATE ----------------------------------------------------------------------------------------------------------------
 var currentCurrency = 'USD';
 var currentOzPriceUSD = 0;
 var chartData = { labels: [], usd: [], jod: [] };
 var priceChart = null;
 
-// ── INIT ─────────────────────────────────────────────────────────
+// ---- INIT ------------------------------------------------------------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', function() {
   fetchGoldPrice();
   loadChartData();
@@ -61,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// ── FETCH GOLD PRICE ─────────────────────────────────────────────
+// ---- FETCH GOLD PRICE ------------------------------------------------------------------------------------------
 function fetchGoldPrice() {
   fetch(GOLD_API_URL, {})
   .then(function(res) { return res.json(); })
@@ -82,7 +77,7 @@ function fetchGoldPrice() {
   });
 }
 
-// ── CALCULATIONS ──────────────────────────────────────────────────
+// ---- CALCULATIONS ----------------------------------------------------------------------------------------------------
 function getGramPrice24K(ozPriceUSD) {
   return ozPriceUSD / TROY_OZ_TO_GRAM;
 }
@@ -108,7 +103,7 @@ function formatOz(usdPrice) {
   return formatPrice(usdPrice, 2);
 }
 
-// ── UPDATE ALL PRICES ─────────────────────────────────────────────
+// ---- UPDATE ALL PRICES ------------------------------------------------------------------------------------------
 function updateAllPrices(prevPrice) {
   var oz   = currentOzPriceUSD;
   var g24  = getGramPrice24K(oz);
@@ -124,7 +119,7 @@ function updateAllPrices(prevPrice) {
   // Direction indicator
   var dir = oz > prevPrice ? 'up' : oz < prevPrice ? 'down' : 'same';
 
-  // ── HOME PAGE ──
+  // ---- HOME PAGE ----
   setEl('priceUSD', '$' + oz.toFixed(2), dir);
   setEl('priceJOD', 'JD ' + (oz * USD_TO_JOD).toFixed(2), dir);
   setEl('priceTime', timeStr);
@@ -136,7 +131,7 @@ function updateAllPrices(prevPrice) {
   setEl('rateEnglish', formatPrice(english));
   setEl('rateBar', formatPrice(bar1kg, 0));
 
-  // ── PRICES PAGE ──
+  // ---- PRICES PAGE ----
   // Ounce display
   var ozEl = document.getElementById('ozPrice');
   if (ozEl) ozEl.textContent = formatOz(oz);
@@ -172,7 +167,7 @@ function updateAllPrices(prevPrice) {
   calculate();
 }
 
-// ── SET ELEMENT ───────────────────────────────────────────────────
+// ---- SET ELEMENT ------------------------------------------------------------------------------------------------------
 function setEl(id, val, dir) {
   var el = document.getElementById(id);
   if (!el) return;
@@ -182,7 +177,7 @@ function setEl(id, val, dir) {
   if (dir === 'down' && prev !== val) { el.classList.remove('price-up'); el.classList.add('price-down'); el.parentElement && el.parentElement.classList.add('flash-down'); }
 }
 
-// ── BUILD KARAT TABLE ─────────────────────────────────────────────
+// ---- BUILD KARAT TABLE ------------------------------------------------------------------------------------------
 function buildKaratTable(oz) {
   var tbody = document.getElementById('karatTableBody');
   if (!tbody) return;
@@ -201,7 +196,7 @@ function buildKaratTable(oz) {
   tbody.innerHTML = rows.join('');
 }
 
-// ── BUILD BAR TABLE ───────────────────────────────────────────────
+// ---- BUILD BAR TABLE ----------------------------------------------------------------------------------------------
 function buildBarTable(oz) {
   var tbody = document.getElementById('barTableBody');
   if (!tbody) return;
@@ -216,7 +211,7 @@ function buildBarTable(oz) {
   tbody.innerHTML = rows.join('');
 }
 
-// ── TICKER ────────────────────────────────────────────────────────
+// ---- TICKER ----------------------------------------------------------------------------------------------------------------
 function buildTicker(oz, g24, g21, g18, rashadi, english) {
   var items = [
     'XAU/USD: ' + formatOz(oz),
@@ -236,7 +231,7 @@ function buildTicker(oz, g24, g21, g18, rashadi, english) {
   if (track) track.innerHTML = html;
 }
 
-// ── CURRENCY TOGGLE ───────────────────────────────────────────────
+// ---- CURRENCY TOGGLE ----------------------------------------------------------------------------------------------
 function setCurrency(cur) {
   currentCurrency = cur;
 
@@ -250,7 +245,7 @@ function setCurrency(cur) {
   updateChartCurrency();
 }
 
-// ── CHART ─────────────────────────────────────────────────────────
+// ---- CHART ------------------------------------------------------------------------------------------------------------------
 function saveChartPoint(priceUSD) {
   var stored = localStorage.getItem('goldChartData');
   if (stored) chartData = JSON.parse(stored);
@@ -384,7 +379,7 @@ function updateChartCurrency() {
   priceChart.update();
 }
 
-// ── CALCULATOR ────────────────────────────────────────────────────
+// ---- CALCULATOR --------------------------------------------------------------------------------------------------------
 function calculate() {
   var weightEl = document.getElementById('calcWeight');
   var karatEl  = document.getElementById('calcKarat');
@@ -411,7 +406,7 @@ function calculate() {
     '<small style="color:var(--muted)">' + sym + ' ' + convertPrice(gramPrice).toFixed(2) + '/g</small>';
 }
 
-// ── NEWS ──────────────────────────────────────────────────────────
+// ---- NEWS --------------------------------------------------------------------------------------------------------------------
 function loadNews() {
   var grid = document.getElementById('newsGrid');
   if (!grid) return;
@@ -460,7 +455,7 @@ function renderFallbackNews() {
   ];
   var html = fallback.map(function(n) {
     return '<div class="news-card" style="cursor:default">' +
-      '<div class="news-img" style="display:flex;align-items:center;justify-content:center;font-size:2.5rem">📰</div>' +
+      '<div class="news-img" style="display:flex;align-items:center;justify-content:center;font-size:2.5rem"><img src="assets/images/old-news.png" alt="News" class="news-img"></div>' +
       '<div class="news-body">' +
         '<div class="news-source">' + n.source + '</div>' +
         '<div class="news-headline">' + n.title + '</div>' +

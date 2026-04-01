@@ -20,7 +20,7 @@
   <ul class="nav-links">
     <li><a href="index.html" class="active">Home</a></li>
     <li><a href="prices.html">Gold Prices</a></li>
-    <li><a href="myAsset.html">My Assets</a></li>
+    <li><a href="#">My Assets</a></li>
   </ul>
   <div class="nav-auth">
     <a href="#" class="btn-ghost">Login</a>
@@ -60,16 +60,12 @@
         </div>
         <div class="price-meta">
           <span id="priceTime">Fetching...</span>
-          <div class="currency-toggle">
-            <button class="toggle-btn active" id="btnUSD" onclick="setCurrency('USD')">USD</button>
-            <button class="toggle-btn" id="btnJOD" onclick="setCurrency('JOD')">JOD</button>
-          </div>
         </div>
       </div>
 
       <div class="hero-cta">
         <a href="prices.html" class="btn-gold-lg">View All Prices</a>
-        <a href="#" class="btn-outline-lg">Manage Assets →</a>
+        <a href="myAssets.html" class="btn-outline-lg">Manage Assets →</a>
       </div>
     </div>
 
@@ -110,19 +106,19 @@
       <div class="rate-unit">per gram</div>
     </div>
     <div class="rate-card coin-card">
-      <img src="assets/images/rashadi_coin.jpg" alt="Rashadi Coin" class="coin-img"/>
+      <img src="assets/images/rashadi_coin.png" alt="Rashadi Coin" class="coin-img"/>
       <div class="rate-karat">Rashadi</div>
       <div class="rate-price" id="rateRashadi">—</div>
       <div class="rate-unit">per lira</div>
     </div>
     <div class="rate-card coin-card">
-      <img src="assets/images/english_coin.jpg" alt="English Coin" class="coin-img"/>
+      <img src="assets/images/english_coin.png" alt="English Coin" class="coin-img"/>
       <div class="rate-karat">English</div>
       <div class="rate-price" id="rateEnglish">—</div>
       <div class="rate-unit">per lira</div>
     </div>
     <div class="rate-card bar-card">
-      <img src="assets/images/gold-bar.png" alt="Gold Bar" class="bar-img"/>
+      <img src="assets/images/gold-bar.jpg" alt="Gold Bar" class="bar-img"/>
       <div class="rate-karat">Gold Bar</div>
       <div class="rate-price" id="rateBar">—</div>
       <div class="rate-unit">1 kg bar</div>
@@ -143,26 +139,26 @@
   </div>
 </section>
 
-<!-- ADD ASSETS CTA -->
+<!-- ADD ASSETS -->
 <section class="cta-section">
   <div class="cta-inner">
-    <h2 class="cta-title">Track Your Gold Portfolio</h2>
+    <h2 class="cta-title">Track Your Gold Assets</h2>
     <p class="cta-sub">Add your jewelry, coins, and bars — see real-time profit & loss</p>
     <div class="asset-types">
       <div class="asset-type">
-        <div class="asset-icon">💍</div>
+        <div class="asset-icon"><img src="assets/images/gold-jewelry.png" alt="Jewelry"></div>
         <span>Jewelry</span>
       </div>
       <div class="asset-type">
-        <div class="asset-icon">🪙</div>
+        <div class="asset-icon"><img src="assets/images/rashadi_coin.png" alt="Rashadi Coin"></div>
         <span>Coins</span>
       </div>
       <div class="asset-type">
-        <div class="asset-icon">🏅</div>
+        <div class="asset-icon"><img src="assets/images/square_gold.png" alt="Gold Bar"></div>
         <span>Gold Bars</span>
       </div>
     </div>
-    <a href="#" class="btn-gold-lg">Manage Your Portfolio →</a>
+    <a href="myAssets.html" class="btn-gold-lg">Manage Your Assets →</a>
   </div>
 </section>
 

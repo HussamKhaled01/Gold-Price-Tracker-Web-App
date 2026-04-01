@@ -1,1 +1,7 @@
 gold = #C9952A
+
+====================== currency-toggle ======================
+<div class="currency-toggle">
+    <button class="toggle-btn active" id="btnUSD" onclick="setCurrency('USD')">USD</button>
+    <button class="toggle-btn" id="btnJOD" onclick="setCurrency('JOD')">JOD</button>
+</div>
