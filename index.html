@@ -10,30 +10,17 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="cssFiles/style.css">
+  <!-- Problem Caused to index ui (hanan work) from the bootstrap library (Hussam work)
+   if style css placed before bootstrap the bootstrap will overwrite style.css -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+
+  <link href="cssFiles/auth.css" rel="stylesheet">
+  <link href="cssFiles/style.css" rel="stylesheet">
 </head>
 
 <body>
 
-<<<<<<< HEAD
-<!-- NAVBAR -->
-<nav class="navbar">
-  <div class="nav-brand">
-    <span class="nav-icon">⬡</span>
-    <span class="nav-title">GoldVault</span>
-  </div>
-  <ul class="nav-links">
-    <li><a href="index.html" class="active">Home</a></li>
-    <li><a href="prices.html">Gold Prices</a></li>
-    <li><a href="#">My Assets</a></li>
-  </ul>
-  <div class="nav-auth">
-    <a href="#" class="btn-ghost">Login</a>
-    <a href="#" class="btn-gold">Register</a>
-  </div>
-  <button class="nav-toggle" id="navToggle">☰</button>
-</nav>
-=======
   <!-- NAVBAR -->
   <nav class="navbar">
     <div class="nav-brand">
@@ -43,15 +30,16 @@
     <ul class="nav-links">
       <li><a href="index.html" class="active">Home</a></li>
       <li><a href="prices.html">Gold Prices</a></li>
-      <li><a href="myAssets.html">My Assets</a></li>
+      <li><a href="#" id="assetsBtn">My Assets</a></li>
+
     </ul>
     <div class="nav-auth">
-      <a href="#" class="btn-ghost">Login</a>
-      <a href="#" class="btn-gold">Register</a>
+      <button id="loginBtn" type="button" class="btn-ghost">Login</button>
+      <button id="registerBtn" type="button" class="btn-gold">Register</button>
+      <button id="logoutBtn" type="button" class="btn-ghost" style="display: none;">Logout</button>
     </div>
     <button class="nav-toggle" id="navToggle">☰</button>
   </nav>
->>>>>>> e823a18093bd7fa00cdf28bed3665a2fda8987b5
 
   <!-- TICKER -->
   <div class="ticker-bar">
@@ -88,14 +76,14 @@
         </div>
 
         <div class="hero-cta">
-        <div class="hero-cta">
-          <a href="prices.html" class="btn-gold-lg">View All Prices</a>
-          <a href="myAssets.html" class="btn-outline-lg">Manage Assets →</a>
-        </div>
-        <div class="currency-toggle">
-              <button class="toggle-btn active" id="btnUSD" onclick="setCurrency('USD')">USD</button>
-              <button class="toggle-btn" id="btnJOD" onclick="setCurrency('JOD')">JOD</button>
-            </div>
+          <div class="hero-cta">
+            <a href="prices.html" class="btn-gold-lg">View All Prices</a>
+            <a href="myAssets.html" class="btn-outline-lg">Manage Assets →</a>
+          </div>
+          <div class="currency-toggle">
+            <button class="toggle-btn active" id="btnUSD" onclick="setCurrency('USD')">USD</button>
+            <button class="toggle-btn" id="btnJOD" onclick="setCurrency('JOD')">JOD</button>
+          </div>
         </div>
       </div>
 
@@ -196,8 +184,144 @@
     <p>© 2026 GoldVault · Built with real XAU data</p>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Husssam Code -->
+  <div class="modal fade" id="loginModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="d-flex justify-content-end p-2">
+          <button type="button" class="btn-close xBtn"></button>
+        </div>
+
+        <div class="modal-body p-4">
+          <div class="text-center">
+            <h1 class="h2">Sign in</h1>
+            <p class="text-muted">Sign in below to access your account</p>
+          </div>
+
+          <form class="mt-4" id="loginForm">
+            <div class="mb-2">
+              <label for="email" class="form-label text-muted mb-1">Email Address</label>
+              <input type="text" class="form-control small" id="loginEmail" name="loginEmail"
+                placeholder="Enter your email">
+              <span class="error-span" id="error-loginEmail"></span>
+            </div>
+
+            <div class="mb-4">
+              <label for="password" class="form-label text-muted mb-1">Password</label>
+              <input type="password" class="form-control" id="loginPassword" name="loginPassword"
+                placeholder="Enter your password">
+              <span class="error-span" id="error-loginPassword"></span>
+            </div>
+
+            <div class="d-grid mb-4">
+              <button type="submit" class="btn-custom">Sign in</button>
+            </div>
+
+            <hr>
+
+            <p class="text-center text-muted mt-3">
+              Don't have an account yet?
+              <button id="redirectToSignUp" type="button" class="link-btn">
+                Sign up
+              </button>
+            </p>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="registerModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="d-flex justify-content-end p-2">
+          <button type="button" class="btn-close xBtn"></button>
+        </div>
+        <div class="modal-body p-4">
+
+
+          <div class="text-center">
+            <h1 class="h2">Sign up</h1>
+            <p class="text-muted">Create an account to get started</p>
+          </div>
+
+          <form class="mt-4" id="registerForm">
+            <div class="mb-3">
+              <label for="fName" class="form-label text-muted mb-1">First Name</label>
+              <input type="text" class="form-control" id="fName" name="fName" placeholder="Enter your first name">
+              <span class="error-span" id="error-fName"></span>
+            </div>
+
+            <div class="mb-3">
+              <label for="lName" class="form-label text-muted mb-1">Last Name</label>
+              <input type="text" class="form-control" id="lName" name="lName" placeholder="Enter your last name">
+              <span class="error-span" id="error-lName"></span>
+            </div>
+
+            <div class="mb-1">
+              <label for="email" class="form-label text-muted mb-1">Email Address</label>
+              <input type="text" class="form-control" id="registerEmail" name="email"
+                placeholder="Enter your email address">
+              <span class="hint-span" id="error-registerEmail"></span>
+            </div>
+
+            <div class="mb-3">
+              <input type="text" class="form-control" id="confirmEmail" name="confirmEmail" placeholder="Confirm Email">
+              <span class="error-span" id="error-confirmEmail"></span>
+            </div>
+
+            <div class="mb-3">
+              <label for="gender" class="form-label text-muted mb-1">Gender</label>
+              <select id="gender" name="gender" class="form-select">
+                <option value="" disabled selected hidden>Select Gender</option>
+                <option value="m">Male</option>
+                <option value="f">Female</option>
+              </select>
+              <span class="error-span" id="error-gender"></span>
+            </div>
+
+            <div class="mb-1">
+              <label for="password" class="form-label text-muted mb-1">Password</label>
+              <input type="password" class="form-control" id="registerPassword" name="password"
+                placeholder="Enter your password">
+              <span class="hint-span" id="error-registerPassword"></span>
+            </div>
+
+            <div class="mb-4">
+              <input type="password" class="form-control" id="confirmPassword" name="confirmPassword"
+                placeholder="Confirm Password">
+              <span class="error-span" id="error-confirmPassword"></span>
+            </div>
+
+            <div class="d-grid mb-4">
+              <button type="submit" class="btn-custom">Sign up</button>
+            </div>
+
+            <hr>
+
+            <p class="text-center text-muted mt-3">
+              Already have an account?
+              <button id="redirectToSignIn" type="button" class="link-btn">
+                Sign in
+              </button>
+            </p>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-sha256@0.9.0/src/sha256.min.js"></script>
+  <script src="jsFiles/auth.js"></script>
+
   <script src="jsFiles/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </body>
 
 </html>
