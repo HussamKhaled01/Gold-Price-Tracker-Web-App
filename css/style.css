@@ -39,6 +39,52 @@ body {
   color: var(--ink);
   min-height: 100vh;
   overflow-x: hidden;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Ccircle cx='14' cy='14' r='13' fill='%23C9952A' stroke='%23B18E62' stroke-width='1.5'/%3E%3Ccircle cx='14' cy='14' r='9' fill='none' stroke='%23F5D98A' stroke-width='1'/%3E%3Ctext x='14' y='18.5' text-anchor='middle' font-size='11' font-weight='bold' fill='%23FBF6EC' font-family='serif'%3E%E2%9D%96%3C/text%3E%3C/svg%3E") 14 14, pointer;
+}
+
+/* ── FLOATING SPARKLES ── */
+.sparkle-layer {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.sparkle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: floatSparkle linear infinite;
+  opacity: 0;
+}
+
+@keyframes floatSparkle {
+  0%   { transform: translateY(0) rotate(0deg) scale(0.8); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 0.7; }
+  100% { transform: translateY(-110vh) rotate(720deg) scale(1.2); opacity: 0; }
+}
+
+/* ── COIN EXPLOSION ── */
+.coin-burst {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  width: 0; height: 0;
+}
+
+.burst-coin {
+  position: absolute;
+  font-size: 18px;
+  animation: burstFly 0.9s ease-out forwards;
+  transform-origin: center;
+}
+
+@keyframes burstFly {
+  0%   { transform: translate(0,0) scale(1) rotate(0deg); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(0.3) rotate(var(--tr)); opacity: 0; }
 }
 
 /* ── FONTS ── */
@@ -800,14 +846,38 @@ em {
    ============================ */
 .page-hero {
   padding: 60px 40px;
-  background: linear-gradient(135deg, var(--warm-white), var(--cream));
+  background: linear-gradient(135deg, #1C1A14 0%, #2a1d00 45%, #3d2e00 75%, #7a5a10 100%);
   border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.page-hero::before {
+  content: 'GOLD';
+  position: absolute;
+  right: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(100px, 18vw, 220px);
+  font-weight: 700;
+  color: rgba(201,149,42,0.08);
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+
+.page-hero-inner {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 40px;
-  max-width: 1280px;
-  margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
 .page-hero-content {
@@ -818,14 +888,26 @@ em {
   font-family: 'Cormorant Garamond', serif;
   font-size: clamp(2.5rem, 5vw, 4.5rem);
   font-weight: 700;
-  color: var(--charcoal);
+  color: var(--gold-pale);
   line-height: 1.1;
   margin-bottom: 12px;
 }
 
+.page-title em {
+  color: var(--gold-light);
+}
+
 .page-sub {
-  color: var(--muted);
+  color: rgba(245,217,138,0.65);
   font-size: 0.95rem;
+}
+
+.page-hero .hero-eyebrow {
+  color: var(--gold-light);
+}
+
+.page-hero .hero-eyebrow::before {
+  background: var(--gold-light);
 }
 
 .page-live-badge {
@@ -901,6 +983,46 @@ em {
   flex: 1;
   height: 1px;
   background: linear-gradient(90deg, var(--border), transparent);
+}
+
+/* Section-level currency toggles */
+.cat-toggle {
+  margin-left: 0;
+  flex-shrink: 0;
+}
+
+/* Chart date range picker */
+.chart-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.chart-date-input {
+  padding: 5px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  color: var(--ink);
+  background: var(--cream);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.chart-date-input:focus {
+  border-color: var(--gold);
+}
+
+.chart-date-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 /* KARAT BIG CARDS */
@@ -1368,6 +1490,13 @@ td.bold {
   .hero-cta {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .cta-price-btn{
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    
   }
 }
 

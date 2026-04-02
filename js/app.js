@@ -54,6 +54,20 @@ document.addEventListener('DOMContentLoaded', function() {
       if (auth)  auth.style.display  = auth.style.display  === 'flex' ? 'none' : 'flex';
     });
   }
+
+  // Visual effects
+  initSparkles();
+  // Slight delay so buttons are fully rendered before attaching burst
+  setTimeout(attachBurstToButtons, 500);
+
+  // Set default chart date range to last 30 days
+  var today = new Date();
+  var from  = new Date();
+  from.setDate(today.getDate() - 30);
+  var toEl   = document.getElementById('chartDateTo');
+  var fromEl = document.getElementById('chartDateFrom');
+  if (toEl)   toEl.value   = today.toISOString().split('T')[0];
+  if (fromEl) fromEl.value = from.toISOString().split('T')[0];
 });
 
 // ---- FETCH GOLD PRICE ------------------------------------------------------------------------------------------
@@ -235,10 +249,16 @@ function buildTicker(oz, g24, g21, g18, rashadi, english) {
 function setCurrency(cur) {
   currentCurrency = cur;
 
+  // Sync all .toggle-btn elements by matching text content or id
   var btns = document.querySelectorAll('.toggle-btn');
   btns.forEach(function(b) {
     b.classList.remove('active');
-    if (b.id === 'btn' + cur || b.id === 'btn' + cur + '2') b.classList.add('active');
+    // Match by id (btnUSD, btnJOD, btnUSD2, btnJOD2) OR by text content
+    if (b.id === 'btn' + cur || b.id === 'btn' + cur + '2') {
+      b.classList.add('active');
+    } else if (!b.id && b.textContent.trim() === cur) {
+      b.classList.add('active');
+    }
   });
 
   if (currentOzPriceUSD > 0) updateAllPrices(currentOzPriceUSD);
@@ -379,6 +399,150 @@ function updateChartCurrency() {
   priceChart.update();
 }
 
+// ---- CHART DATE FILTER -----------------------------------------------------------------------------------------
+function filterChartByDate() {
+  var fromEl = document.getElementById('chartDateFrom');
+  var toEl   = document.getElementById('chartDateTo');
+  if (!fromEl || !toEl || !priceChart) return;
+
+  var fromVal = fromEl.value;
+  var toVal   = toEl.value;
+
+  var stored = localStorage.getItem('goldChartData');
+  var allData = stored ? JSON.parse(stored) : chartData;
+
+  if (!fromVal && !toVal) {
+    priceChart.data.labels = allData.labels;
+    priceChart.data.datasets[0].data = currentCurrency === 'JOD' ? allData.jod : allData.usd;
+    priceChart.update();
+    return;
+  }
+
+  var filtered = { labels: [], usd: [], jod: [] };
+  for (var i = 0; i < allData.labels.length; i++) {
+    var label = allData.labels[i]; // format M/D
+    // Parse label back to a comparable string
+    var parts = label.split('/');
+    if (parts.length === 2) {
+      var year = new Date().getFullYear();
+      var month = parseInt(parts[0]);
+      var day   = parseInt(parts[1]);
+      var pointDate = year + '-' + (month < 10 ? '0' : '') + month + '-' + (day < 10 ? '0' : '') + day;
+      var keep = true;
+      if (fromVal && pointDate < fromVal) keep = false;
+      if (toVal   && pointDate > toVal)   keep = false;
+      if (keep) {
+        filtered.labels.push(label);
+        filtered.usd.push(allData.usd[i]);
+        filtered.jod.push(allData.jod[i]);
+      }
+    }
+  }
+
+  var isJOD = currentCurrency === 'JOD';
+  var sym = isJOD ? 'JD' : '$';
+  priceChart.data.labels = filtered.labels;
+  priceChart.data.datasets[0].data = isJOD ? filtered.jod : filtered.usd;
+  priceChart.data.datasets[0].label = 'XAU (' + sym + ')';
+  priceChart.update();
+}
+
+function resetChartFilter() {
+  var fromEl = document.getElementById('chartDateFrom');
+  var toEl   = document.getElementById('chartDateTo');
+  if (fromEl) fromEl.value = '';
+  if (toEl)   toEl.value   = '';
+  filterChartByDate();
+}
+
+// ---- FLOATING SPARKLES -----------------------------------------------------------------------------------------
+function initSparkles() {
+  var layer = document.getElementById('sparkleLayer');
+  if (!layer) return;
+
+  var symbols = ['◆', '✦', '⬡', '✧', '❖', '⬟'];
+  var colors  = ['#C9952A', '#E8B84B', '#F5D98A', '#B18E62', '#ffd700'];
+
+  for (var i = 0; i < 18; i++) {
+    (function(idx) {
+      var el = document.createElement('div');
+      el.className = 'sparkle';
+      var size  = 8 + Math.random() * 14;
+      var left  = Math.random() * 100;
+      var delay = Math.random() * 12;
+      var dur   = 8 + Math.random() * 14;
+      var color = colors[Math.floor(Math.random() * colors.length)];
+      var sym   = symbols[Math.floor(Math.random() * symbols.length)];
+
+      el.style.cssText = [
+        'left:' + left + 'vw',
+        'top:' + (90 + Math.random() * 20) + 'vh',
+        'font-size:' + size + 'px',
+        'color:' + color,
+        'animation-duration:' + dur + 's',
+        'animation-delay:' + delay + 's',
+      ].join(';');
+      el.style.display = 'flex';
+      el.style.alignItems = 'center';
+      el.style.justifyContent = 'center';
+      el.style.width = size + 'px';
+      el.style.height = size + 'px';
+      el.style.borderRadius = '50%';
+      el.style.background = 'transparent';
+      el.textContent = sym;
+      layer.appendChild(el);
+    })(i);
+  }
+}
+
+// ---- COIN EXPLOSION --------------------------------------------------------------------------------------------
+function triggerCoinBurst(event) {
+  var burst = document.getElementById('coinBurst');
+  if (!burst) return;
+
+  var x = event ? event.clientX : window.innerWidth / 2;
+  var y = event ? event.clientY : window.innerHeight / 2;
+
+  burst.style.left = x + 'px';
+  burst.style.top  = y + 'px';
+
+  var coinSyms = ['🪙', '💰', '⬡', '✦', '◆'];
+  var count = 10;
+
+  for (var i = 0; i < count; i++) {
+    (function(idx) {
+      var coin = document.createElement('div');
+      coin.className = 'burst-coin';
+
+      var angle  = (idx / count) * 360 + (Math.random() * 36 - 18);
+      var dist   = 50 + Math.random() * 80;
+      var rad    = angle * Math.PI / 180;
+      var tx     = Math.cos(rad) * dist;
+      var ty     = Math.sin(rad) * dist;
+      var rot    = (Math.random() * 360 - 180) + 'deg';
+      var sym    = coinSyms[Math.floor(Math.random() * coinSyms.length)];
+
+      coin.style.setProperty('--tx', tx + 'px');
+      coin.style.setProperty('--ty', ty + 'px');
+      coin.style.setProperty('--tr', rot);
+      coin.textContent = sym;
+
+      burst.appendChild(coin);
+
+      setTimeout(function() { coin.remove(); }, 950);
+    })(i);
+  }
+}
+
+function attachBurstToButtons() {
+  var btns = document.querySelectorAll('.btn-gold, .btn-gold-lg, .toggle-btn, .ctoggle, .btn-ghost');
+  btns.forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      triggerCoinBurst(e);
+    });
+  });
+}
+
 // ---- CALCULATOR --------------------------------------------------------------------------------------------------------
 function calculate() {
   var weightEl = document.getElementById('calcWeight');
@@ -455,7 +619,7 @@ function renderFallbackNews() {
   ];
   var html = fallback.map(function(n) {
     return '<div class="news-card" style="cursor:default">' +
-      '<div class="news-img" style="display:flex;align-items:center;justify-content:center;font-size:2.5rem"><img src="assets/images/old-news.png" alt="News" class="news-img"></div>' +
+      '<div class="news-img" style="display:flex;align-items:center;justify-content:center;font-size:2.5rem"><img src="../assets/images/old-news.png" alt="News" class="news-img"></div>' +
       '<div class="news-body">' +
         '<div class="news-source">' + n.source + '</div>' +
         '<div class="news-headline">' + n.title + '</div>' +
