@@ -14,26 +14,9 @@
 </head>
 
 <body>
+  <div class="sparkle-layer" id="sparkleLayer"></div>
+  <div class="coin-burst" id="coinBurst"></div>
 
-<<<<<<< HEAD
-<!-- NAVBAR -->
-<nav class="navbar">
-  <div class="nav-brand">
-    <span class="nav-icon">⬡</span>
-    <span class="nav-title">GoldVault</span>
-  </div>
-  <ul class="nav-links">
-    <li><a href="index.html" class="active">Home</a></li>
-    <li><a href="prices.html">Gold Prices</a></li>
-    <li><a href="#">My Assets</a></li>
-  </ul>
-  <div class="nav-auth">
-    <a href="#" class="btn-ghost">Login</a>
-    <a href="#" class="btn-gold">Register</a>
-  </div>
-  <button class="nav-toggle" id="navToggle">☰</button>
-</nav>
-=======
   <!-- NAVBAR -->
   <nav class="navbar">
     <div class="nav-brand">
@@ -51,7 +34,6 @@
     </div>
     <button class="nav-toggle" id="navToggle">☰</button>
   </nav>
->>>>>>> e823a18093bd7fa00cdf28bed3665a2fda8987b5
 
   <!-- TICKER -->
   <div class="ticker-bar">
@@ -107,6 +89,13 @@
               <button class="ctoggle active" onclick="toggleChart('USD',this)">USD</button>
               <button class="ctoggle" onclick="toggleChart('JOD',this)">JOD</button>
             </div>
+          </div>
+          <div class="chart-controls">
+            <span class="chart-date-label">From</span>
+            <input type="date" id="chartDateFrom" class="chart-date-input" onchange="filterChartByDate()"/>
+            <span class="chart-date-label">To</span>
+            <input type="date" id="chartDateTo" class="chart-date-input" onchange="filterChartByDate()"/>
+            <button class="toggle-btn" onclick="resetChartFilter()" style="border:1.5px solid var(--border);border-radius:8px;font-size:0.72rem;padding:4px 10px">Reset</button>
           </div>
           <canvas id="priceChart" height="220"></canvas>
         </div>

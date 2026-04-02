@@ -9,6 +9,8 @@
   <link rel="stylesheet" href="cssFiles/style.css">
 </head>
 <body>
+<div class="sparkle-layer" id="sparkleLayer"></div>
+<div class="coin-burst" id="coinBurst"></div>
 
 <!-- NAVBAR -->
 <nav class="navbar">
@@ -19,7 +21,7 @@
   <ul class="nav-links">
     <li><a href="index.html">Home</a></li>
     <li><a href="prices.html" class="active">Gold Prices</a></li>
-    <li><a href="#">My Assets</a></li>
+    <li><a href="myAssets.html">My Assets</a></li>
   </ul>
   <div class="nav-auth">
     <a href="#" class="btn-ghost">Login</a>
@@ -37,6 +39,7 @@
 
 <!-- PAGE HEADER -->
 <section class="page-hero">
+  <div class="page-hero-inner">
   <div class="page-hero-content">
     <p class="hero-eyebrow">Live Market Data</p>
     <h1 class="page-title">Gold <em>Prices</em></h1>
@@ -54,6 +57,7 @@
       <button class="toggle-btn" id="btnJOD2" onclick="setCurrency('JOD')">JOD</button>
     </div>
   </div>
+  </div>
 </section>
 
 <!-- KARAT PRICES -->
@@ -61,7 +65,12 @@
   <div class="prices-inner">
 
     <div class="price-category">
-      <h2 class="cat-title">Gold by Karat <span class="cat-line"></span></h2>
+      <h2 class="cat-title">Gold by Karat <span class="cat-line"></span>
+        <div class="currency-toggle cat-toggle">
+          <button class="toggle-btn active" onclick="setCurrency('USD')">USD</button>
+          <button class="toggle-btn" onclick="setCurrency('JOD')">JOD</button>
+        </div>
+      </h2>
       <div class="karat-cards">
 
         <div class="karat-big-card k24">
@@ -146,7 +155,12 @@
 
     <!-- COINS SECTION -->
     <div class="price-category">
-      <h2 class="cat-title">Gold Coins <span class="cat-line"></span></h2>
+      <h2 class="cat-title">Gold Coins <span class="cat-line"></span>
+        <div class="currency-toggle cat-toggle">
+          <button class="toggle-btn active" onclick="setCurrency('USD')">USD</button>
+          <button class="toggle-btn" onclick="setCurrency('JOD')">JOD</button>
+        </div>
+      </h2>
       <div class="coins-grid">
 
         <div class="coin-detail-card">
@@ -194,7 +208,12 @@
 
     <!-- GOLD BARS SECTION -->
     <div class="price-category">
-      <h2 class="cat-title">Gold Bars <span class="cat-line"></span></h2>
+      <h2 class="cat-title">Gold Bars <span class="cat-line"></span>
+        <div class="currency-toggle cat-toggle">
+          <button class="toggle-btn active" onclick="setCurrency('USD')">USD</button>
+          <button class="toggle-btn" onclick="setCurrency('JOD')">JOD</button>
+        </div>
+      </h2>
       <div class="bars-section">
         <div class="bar-visual">
           <img src="assets/bars/gold-bar.jpg" alt="Gold Bar" class="bar-big-img"/>
@@ -250,6 +269,6 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="jsFiles/app.js"></script>
+<script src="jsFile/app.js"></script>
 </body>
 </html>
