@@ -10,21 +10,21 @@ var NEWS_API_URL = 'https://gnews.io/api/v4/search?q=gold+XAU+price&lang=en&max=
 var USD_TO_JOD = 0.709;
 
 // Gold weights (grams)
-var RASHADI_WEIGHT_G    = 6.494;  // gold content in grams (21.6K)
-var ENGLISH_WEIGHT_G    = 7.322;  // gold content in grams (22K)
-var TROY_OZ_TO_GRAM     = 31.1035;
-var TOLA_TO_GRAM        = 11.6638;
+var RASHADI_WEIGHT_G = 6.494;  // gold content in grams (21.6K)
+var ENGLISH_WEIGHT_G = 7.322;  // gold content in grams (22K)
+var TROY_OZ_TO_GRAM = 31.1035;
+var TOLA_TO_GRAM = 11.6638;
 
 // Bar sizes in grams
 var BAR_SIZES = [
-  { name: '1 gram',   weight: 1     },
-  { name: '5 grams',  weight: 5     },
-  { name: '10 grams', weight: 10    },
-  { name: '50 grams', weight: 50    },
-  { name: '100 grams',weight: 100   },
-  { name: '250 grams',weight: 250   },
-  { name: '500 grams',weight: 500   },
-  { name: '1 kg',     weight: 1000  },
+  { name: '1 gram', weight: 1 },
+  { name: '5 grams', weight: 5 },
+  { name: '10 grams', weight: 10 },
+  { name: '50 grams', weight: 50 },
+  { name: '100 grams', weight: 100 },
+  { name: '250 grams', weight: 250 },
+  { name: '500 grams', weight: 500 },
+  { name: '1 kg', weight: 1000 },
 ];
 
 // ---- STATE ----------------------------------------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ var chartData = { labels: [], usd: [], jod: [] };
 var priceChart = null;
 
 // ---- INIT ------------------------------------------------------------------------------------------------------------------
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   fetchGoldPrice();
   loadChartData();
   loadNews();
@@ -47,11 +47,11 @@ document.addEventListener('DOMContentLoaded', function() {
   // Mobile nav toggle
   var toggle = document.getElementById('navToggle');
   if (toggle) {
-    toggle.addEventListener('click', function() {
+    toggle.addEventListener('click', function () {
       var links = document.querySelector('.nav-links');
-      var auth  = document.querySelector('.nav-auth');
+      var auth = document.querySelector('.nav-auth');
       if (links) links.style.display = links.style.display === 'flex' ? 'none' : 'flex';
-      if (auth)  auth.style.display  = auth.style.display  === 'flex' ? 'none' : 'flex';
+      if (auth) auth.style.display = auth.style.display === 'flex' ? 'none' : 'flex';
     });
   }
 
@@ -62,33 +62,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Set default chart date range to last 30 days
   var today = new Date();
-  var from  = new Date();
+  var from = new Date();
   from.setDate(today.getDate() - 30);
-  var toEl   = document.getElementById('chartDateTo');
+  var toEl = document.getElementById('chartDateTo');
   var fromEl = document.getElementById('chartDateFrom');
-  if (toEl)   toEl.value   = today.toISOString().split('T')[0];
+  if (toEl) toEl.value = today.toISOString().split('T')[0];
   if (fromEl) fromEl.value = from.toISOString().split('T')[0];
 });
 
 // ---- FETCH GOLD PRICE ------------------------------------------------------------------------------------------
 function fetchGoldPrice() {
   fetch(GOLD_API_URL, {})
-  .then(function(res) { return res.json(); })
-  .then(function(data) {
-    if (data && data.price) {
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      if (data && data.price) {
+        var prevPrice = currentOzPriceUSD;
+        currentOzPriceUSD = parseFloat(data.price);
+        updateAllPrices(prevPrice);
+        saveChartPoint(currentOzPriceUSD);
+      }
+    })
+    .catch(function (err) {
+      console.warn('Gold API error, using demo price:', err);
+      // Demo fallback price
       var prevPrice = currentOzPriceUSD;
-      currentOzPriceUSD = parseFloat(data.price);
+      currentOzPriceUSD = 3020 + (Math.random() * 20 - 10);
       updateAllPrices(prevPrice);
-      saveChartPoint(currentOzPriceUSD);
-    }
-  })
-  .catch(function(err) {
-    console.warn('Gold API error, using demo price:', err);
-    // Demo fallback price
-    var prevPrice = currentOzPriceUSD;
-    currentOzPriceUSD = 3020 + (Math.random() * 20 - 10);
-    updateAllPrices(prevPrice);
-  });
+    });
 }
 
 // ---- CALCULATIONS ----------------------------------------------------------------------------------------------------
@@ -119,13 +119,13 @@ function formatOz(usdPrice) {
 
 // ---- UPDATE ALL PRICES ------------------------------------------------------------------------------------------
 function updateAllPrices(prevPrice) {
-  var oz   = currentOzPriceUSD;
-  var g24  = getGramPrice24K(oz);
-  var g21  = getKaratPrice(oz, 21);
-  var g18  = getKaratPrice(oz, 18);
+  var oz = currentOzPriceUSD;
+  var g24 = getGramPrice24K(oz);
+  var g21 = getKaratPrice(oz, 21);
+  var g18 = getKaratPrice(oz, 18);
   var rashadi = g24 * RASHADI_WEIGHT_G;
   var english = g24 * ENGLISH_WEIGHT_G;
-  var bar1kg  = g24 * 1000;
+  var bar1kg = g24 * 1000;
 
   var now = new Date();
   var timeStr = 'Updated ' + now.toLocaleTimeString();
@@ -158,8 +158,8 @@ function updateAllPrices(prevPrice) {
   setEl('k18gram', formatPrice(getKaratPrice(oz, 18)));
 
   setEl('k24oz', formatOz(oz));
-  setEl('k21oz', formatOz(oz * (21/24)));
-  setEl('k18oz', formatOz(oz * (18/24)));
+  setEl('k21oz', formatOz(oz * (21 / 24)));
+  setEl('k18oz', formatOz(oz * (18 / 24)));
 
   setEl('k24tola', formatPrice(g24 * TOLA_TO_GRAM));
   setEl('k21tola', formatPrice(g21 * TOLA_TO_GRAM));
@@ -187,7 +187,7 @@ function setEl(id, val, dir) {
   if (!el) return;
   var prev = el.textContent;
   el.textContent = val;
-  if (dir === 'up' && prev !== val)   { el.classList.remove('price-down'); el.classList.add('price-up'); el.parentElement && el.parentElement.classList.add('flash-up'); }
+  if (dir === 'up' && prev !== val) { el.classList.remove('price-down'); el.classList.add('price-up'); el.parentElement && el.parentElement.classList.add('flash-up'); }
   if (dir === 'down' && prev !== val) { el.classList.remove('price-up'); el.classList.add('price-down'); el.parentElement && el.parentElement.classList.add('flash-down'); }
 }
 
@@ -196,16 +196,16 @@ function buildKaratTable(oz) {
   var tbody = document.getElementById('karatTableBody');
   if (!tbody) return;
   var karats = [24, 22, 21, 18, 14, 12, 10, 9];
-  var rows = karats.map(function(k) {
+  var rows = karats.map(function (k) {
     var gPrice = getGramPrice24K(oz) * (k / 24);
     return '<tr>' +
       '<td class="bold">' + k + 'K</td>' +
-      '<td>' + ((k/24)*100).toFixed(1) + '%</td>' +
+      '<td>' + ((k / 24) * 100).toFixed(1) + '%</td>' +
       '<td class="bold">' + formatPrice(gPrice) + '</td>' +
-      '<td>' + formatOz(oz * (k/24)) + '</td>' +
+      '<td>' + formatOz(oz * (k / 24)) + '</td>' +
       '<td>' + formatPrice(gPrice * 10) + '</td>' +
       '<td>' + formatPrice(gPrice * 100) + '</td>' +
-    '</tr>';
+      '</tr>';
   });
   tbody.innerHTML = rows.join('');
 }
@@ -215,12 +215,12 @@ function buildBarTable(oz) {
   var tbody = document.getElementById('barTableBody');
   if (!tbody) return;
   var g24 = getGramPrice24K(oz);
-  var rows = BAR_SIZES.map(function(bar) {
+  var rows = BAR_SIZES.map(function (bar) {
     return '<tr>' +
       '<td class="bold">' + bar.name + '</td>' +
       '<td>' + bar.weight + ' g</td>' +
       '<td class="bold">' + formatPrice(g24 * bar.weight, bar.weight >= 100 ? 0 : 2) + '</td>' +
-    '</tr>';
+      '</tr>';
   });
   tbody.innerHTML = rows.join('');
 }
@@ -238,7 +238,7 @@ function buildTicker(oz, g24, g21, g18, rashadi, english) {
   ];
   // Duplicate for seamless loop
   var all = items.concat(items);
-  var html = all.map(function(t) {
+  var html = all.map(function (t) {
     return '<span class="ticker-item">🔶 ' + t + '</span>';
   }).join('');
   var track = document.getElementById('tickerTrack');
@@ -251,7 +251,7 @@ function setCurrency(cur) {
 
   // Sync all .toggle-btn elements by matching text content or id
   var btns = document.querySelectorAll('.toggle-btn');
-  btns.forEach(function(b) {
+  btns.forEach(function (b) {
     b.classList.remove('active');
     // Match by id (btnUSD, btnJOD, btnUSD2, btnJOD2) OR by text content
     if (b.id === 'btn' + cur || b.id === 'btn' + cur + '2') {
@@ -299,7 +299,7 @@ function loadChartData() {
     for (var i = 30; i >= 1; i--) {
       var d = new Date();
       d.setDate(d.getDate() - i);
-      chartData.labels.push((d.getMonth()+1) + '/' + d.getDate());
+      chartData.labels.push((d.getMonth() + 1) + '/' + d.getDate());
       var p = base + (Math.random() * 100 - 20);
       base = p;
       chartData.usd.push(p.toFixed(2));
@@ -316,7 +316,7 @@ function renderChart() {
 
   var isJOD = currentCurrency === 'JOD';
   var prices = isJOD ? chartData.jod : chartData.usd;
-  var sym    = isJOD ? 'JD' : '$';
+  var sym = isJOD ? 'JD' : '$';
 
   var gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
   gradient.addColorStop(0, 'rgba(201,149,42,0.3)');
@@ -358,7 +358,7 @@ function renderChart() {
           borderColor: 'rgba(201,149,42,0.3)',
           borderWidth: 1,
           callbacks: {
-            label: function(ctx) { return ' ' + sym + ' ' + parseFloat(ctx.raw).toFixed(2); }
+            label: function (ctx) { return ' ' + sym + ' ' + parseFloat(ctx.raw).toFixed(2); }
           }
         }
       },
@@ -371,7 +371,7 @@ function renderChart() {
           grid: { color: 'rgba(201,149,42,0.06)' },
           ticks: {
             color: '#7A7060', font: { size: 11 },
-            callback: function(v) { return sym + ' ' + v; }
+            callback: function (v) { return sym + ' ' + v; }
           }
         }
       },
@@ -382,7 +382,7 @@ function renderChart() {
 
 function toggleChart(cur, btn) {
   var btns = document.querySelectorAll('.ctoggle');
-  btns.forEach(function(b) { b.classList.remove('active'); });
+  btns.forEach(function (b) { b.classList.remove('active'); });
   btn.classList.add('active');
   currentCurrency = cur;
   updateChartCurrency();
@@ -395,18 +395,18 @@ function updateChartCurrency() {
   var sym = isJOD ? 'JD' : '$';
   priceChart.data.datasets[0].data = prices;
   priceChart.data.datasets[0].label = 'XAU (' + sym + ')';
-  priceChart.options.scales.y.ticks.callback = function(v) { return sym + ' ' + v; };
+  priceChart.options.scales.y.ticks.callback = function (v) { return sym + ' ' + v; };
   priceChart.update();
 }
 
 // ---- CHART DATE FILTER -----------------------------------------------------------------------------------------
 function filterChartByDate() {
   var fromEl = document.getElementById('chartDateFrom');
-  var toEl   = document.getElementById('chartDateTo');
+  var toEl = document.getElementById('chartDateTo');
   if (!fromEl || !toEl || !priceChart) return;
 
   var fromVal = fromEl.value;
-  var toVal   = toEl.value;
+  var toVal = toEl.value;
 
   var stored = localStorage.getItem('goldChartData');
   var allData = stored ? JSON.parse(stored) : chartData;
@@ -426,11 +426,11 @@ function filterChartByDate() {
     if (parts.length === 2) {
       var year = new Date().getFullYear();
       var month = parseInt(parts[0]);
-      var day   = parseInt(parts[1]);
+      var day = parseInt(parts[1]);
       var pointDate = year + '-' + (month < 10 ? '0' : '') + month + '-' + (day < 10 ? '0' : '') + day;
       var keep = true;
       if (fromVal && pointDate < fromVal) keep = false;
-      if (toVal   && pointDate > toVal)   keep = false;
+      if (toVal && pointDate > toVal) keep = false;
       if (keep) {
         filtered.labels.push(label);
         filtered.usd.push(allData.usd[i]);
@@ -449,9 +449,9 @@ function filterChartByDate() {
 
 function resetChartFilter() {
   var fromEl = document.getElementById('chartDateFrom');
-  var toEl   = document.getElementById('chartDateTo');
+  var toEl = document.getElementById('chartDateTo');
   if (fromEl) fromEl.value = '';
-  if (toEl)   toEl.value   = '';
+  if (toEl) toEl.value = '';
   filterChartByDate();
 }
 
@@ -461,18 +461,18 @@ function initSparkles() {
   if (!layer) return;
 
   var symbols = ['◆', '✦', '⬡', '✧', '❖', '⬟'];
-  var colors  = ['#C9952A', '#E8B84B', '#F5D98A', '#B18E62', '#ffd700'];
+  var colors = ['#C9952A', '#E8B84B', '#F5D98A', '#B18E62', '#ffd700'];
 
   for (var i = 0; i < 18; i++) {
-    (function(idx) {
+    (function (idx) {
       var el = document.createElement('div');
       el.className = 'sparkle';
-      var size  = 8 + Math.random() * 14;
-      var left  = Math.random() * 100;
+      var size = 8 + Math.random() * 14;
+      var left = Math.random() * 100;
       var delay = Math.random() * 12;
-      var dur   = 8 + Math.random() * 14;
+      var dur = 8 + Math.random() * 14;
       var color = colors[Math.floor(Math.random() * colors.length)];
-      var sym   = symbols[Math.floor(Math.random() * symbols.length)];
+      var sym = symbols[Math.floor(Math.random() * symbols.length)];
 
       el.style.cssText = [
         'left:' + left + 'vw',
@@ -504,23 +504,23 @@ function triggerCoinBurst(event) {
   var y = event ? event.clientY : window.innerHeight / 2;
 
   burst.style.left = x + 'px';
-  burst.style.top  = y + 'px';
+  burst.style.top = y + 'px';
 
   var coinSyms = ['🪙', '💰', '⬡', '✦', '◆'];
   var count = 10;
 
   for (var i = 0; i < count; i++) {
-    (function(idx) {
+    (function (idx) {
       var coin = document.createElement('div');
       coin.className = 'burst-coin';
 
-      var angle  = (idx / count) * 360 + (Math.random() * 36 - 18);
-      var dist   = 50 + Math.random() * 80;
-      var rad    = angle * Math.PI / 180;
-      var tx     = Math.cos(rad) * dist;
-      var ty     = Math.sin(rad) * dist;
-      var rot    = (Math.random() * 360 - 180) + 'deg';
-      var sym    = coinSyms[Math.floor(Math.random() * coinSyms.length)];
+      var angle = (idx / count) * 360 + (Math.random() * 36 - 18);
+      var dist = 50 + Math.random() * 80;
+      var rad = angle * Math.PI / 180;
+      var tx = Math.cos(rad) * dist;
+      var ty = Math.sin(rad) * dist;
+      var rot = (Math.random() * 360 - 180) + 'deg';
+      var sym = coinSyms[Math.floor(Math.random() * coinSyms.length)];
 
       coin.style.setProperty('--tx', tx + 'px');
       coin.style.setProperty('--ty', ty + 'px');
@@ -529,15 +529,15 @@ function triggerCoinBurst(event) {
 
       burst.appendChild(coin);
 
-      setTimeout(function() { coin.remove(); }, 950);
+      setTimeout(function () { coin.remove(); }, 950);
     })(i);
   }
 }
 
 function attachBurstToButtons() {
   var btns = document.querySelectorAll('.btn-gold, .btn-gold-lg, .toggle-btn, .ctoggle, .btn-ghost');
-  btns.forEach(function(btn) {
-    btn.addEventListener('click', function(e) {
+  btns.forEach(function (btn) {
+    btn.addEventListener('click', function (e) {
       triggerCoinBurst(e);
     });
   });
@@ -546,12 +546,12 @@ function attachBurstToButtons() {
 // ---- CALCULATOR --------------------------------------------------------------------------------------------------------
 function calculate() {
   var weightEl = document.getElementById('calcWeight');
-  var karatEl  = document.getElementById('calcKarat');
+  var karatEl = document.getElementById('calcKarat');
   var resultEl = document.getElementById('calcResult');
   if (!weightEl || !karatEl || !resultEl) return;
 
   var weight = parseFloat(weightEl.value);
-  var karat  = parseInt(karatEl.value);
+  var karat = parseInt(karatEl.value);
 
   if (!weight || weight <= 0) {
     resultEl.textContent = 'Enter weight and karat to calculate value';
@@ -576,23 +576,23 @@ function loadNews() {
   if (!grid) return;
 
   fetch(NEWS_API_URL)
-  .then(function(res) { return res.json(); })
-  .then(function(data) {
-    if (data && data.articles && data.articles.length) {
-      renderNews(data.articles.slice(0, 3));
-    } else {
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      if (data && data.articles && data.articles.length) {
+        renderNews(data.articles.slice(0, 3));
+      } else {
+        renderFallbackNews();
+      }
+    })
+    .catch(function () {
       renderFallbackNews();
-    }
-  })
-  .catch(function() {
-    renderFallbackNews();
-  });
+    });
 }
 
 function renderNews(articles) {
   var grid = document.getElementById('newsGrid');
   if (!grid) return;
-  var html = articles.map(function(a) {
+  var html = articles.map(function (a) {
     var date = a.publishedAt ? new Date(a.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
     var imgHtml = a.image
       ? '<img src="' + a.image + '" alt="" class="news-img" onerror="this.style.display=\'none\'">'
@@ -600,11 +600,11 @@ function renderNews(articles) {
     return '<a href="' + (a.url || '#') + '" class="news-card" target="_blank" rel="noopener">' +
       imgHtml +
       '<div class="news-body">' +
-        '<div class="news-source">' + (a.source && a.source.name ? a.source.name : 'Market News') + '</div>' +
-        '<div class="news-headline">' + (a.title || 'Gold Market Update') + '</div>' +
-        '<div class="news-date">' + date + '</div>' +
+      '<div class="news-source">' + (a.source && a.source.name ? a.source.name : 'Market News') + '</div>' +
+      '<div class="news-headline">' + (a.title || 'Gold Market Update') + '</div>' +
+      '<div class="news-date">' + date + '</div>' +
       '</div>' +
-    '</a>';
+      '</a>';
   }).join('');
   grid.innerHTML = html;
 }
@@ -617,15 +617,15 @@ function renderFallbackNews() {
     { title: 'Central bank gold purchases reach five-year high in Q1 2026, boosting demand outlook', source: 'Bloomberg', date: 'Mar 30, 2026' },
     { title: 'XAU/USD technical analysis: Bulls maintain control above key support at $3,000/oz', source: 'FXStreet', date: 'Mar 29, 2026' },
   ];
-  var html = fallback.map(function(n) {
+  var html = fallback.map(function (n) {
     return '<div class="news-card" style="cursor:default">' +
       '<div class="news-img" style="display:flex;align-items:center;justify-content:center;font-size:2.5rem"><img src="../assets/images/old-news.png" alt="News" class="news-img"></div>' +
       '<div class="news-body">' +
-        '<div class="news-source">' + n.source + '</div>' +
-        '<div class="news-headline">' + n.title + '</div>' +
-        '<div class="news-date">' + n.date + '</div>' +
+      '<div class="news-source">' + n.source + '</div>' +
+      '<div class="news-headline">' + n.title + '</div>' +
+      '<div class="news-date">' + n.date + '</div>' +
       '</div>' +
-    '</div>';
+      '</div>';
   }).join('');
   grid.innerHTML = html;
 }

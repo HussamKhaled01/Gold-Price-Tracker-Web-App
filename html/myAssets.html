@@ -15,8 +15,22 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
     <link rel="stylesheet" href="../css/style.css">
-
+    <link rel="stylesheet" href="../css/auth.css">
     <link rel="stylesheet" href="../css/myAssets.css">
+
+    <!-- Guard runs immediately in <head> before page renders -->
+    <script>
+        (function () {
+            try {
+                const user = sessionStorage.getItem("currentUser");
+                if (!user || !JSON.parse(user).isLoggedIn) {
+                    window.location.href = '../html/index.html';
+                }
+            } catch (e) {
+                window.location.href = '../html/index.html';
+            }
+        })();
+    </script>
 </head>
 
 <body>
@@ -35,22 +49,24 @@
         <div class="dropdown ms-4">
             <a href="#" class="nav-profile-link dropdown-toggle" id="userMenu" data-bs-toggle="dropdown"
                 aria-expanded="false">
-                <span class="user-name-label">Salam Ata</span>
+                <span class="user-name-label" id="navUserName">User</span>
                 <img id="profilePic" src="../assets/images/female.png" alt="Profile" width="36" height="36"
                     class="rounded-circle" style="border: 2px solid var(--gold);">
             </a>
             <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="userMenu">
-                <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>My Profile</a></li>
+                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#profileModal"><i class="bi bi-person me-2"></i>My Profile</a></li>
                 <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
                 <li>
                     <hr class="dropdown-divider">
                 </li>
-                <li><a class="dropdown-item text-danger" href="../html/index.html"><i
-                            class="bi bi-box-arrow-right me-2"></i>Sign Out</a></li>
+                <li>
+                    <a class="dropdown-item text-danger" href="#" id="signOutBtn">
+                        <i class="bi bi-box-arrow-right me-2"></i>Sign Out
+                    </a>
+                </li>
             </ul>
         </div>
         <button class="nav-toggle" id="navToggle">☰</button>
-
     </nav>
 
     <main class="container-fluid px-lg-5 py-5">
@@ -59,7 +75,8 @@
             <div class="row align-items-end mb-4 g-3">
                 <div class="col-md-8">
                     <p class="hero-eyebrow">Portfolio Manager</p>
-                    <h1 class="serif display-4 fw-bold">Salam's Gold <em>Overview</em></h1>
+                    <h1 class="serif display-4 fw-bold"><span id="headerUserName">Your</span> Gold <em>Overview</em>
+                    </h1>
                 </div>
                 <div class="col-md-4 text-md-end">
                     <button class="btn-gold-lg" data-bs-toggle="modal" data-bs-target="#addAssetModal">
@@ -77,49 +94,42 @@
 
             <section class="rates-strip">
                 <div class="rates-grid" id="portfolioSummaryGrid">
-
                     <div class="rate-card karat24">
                         <div class="rate-karat">24K Holdings</div>
                         <div class="rate-name">Pure Gold Total</div>
                         <div class="rate-price" id="totalValue24">0.00 JOD</div>
                         <div class="rate-unit">Total Value</div>
                     </div>
-
                     <div class="rate-card karat21">
                         <div class="rate-karat">21K Holdings</div>
                         <div class="rate-name">Premium Total</div>
                         <div class="rate-price" id="totalValue21">0.00 JOD</div>
                         <div class="rate-unit">Total Value</div>
                     </div>
-
                     <div class="rate-card karat18">
                         <div class="rate-karat">18K Holdings</div>
                         <div class="rate-name">Standard Total</div>
                         <div class="rate-price" id="totalValue18">0.00 JOD</div>
                         <div class="rate-unit">Total Value</div>
                     </div>
-
                     <div class="rate-card coin-card">
                         <img src="../assets/coins/rashadi_coin.png" alt="Rashadi Coin" class="coin-img" />
                         <div class="rate-karat">Rashadi</div>
                         <div class="rate-price" id="totalValueRashadi">0.00 JOD</div>
                         <div class="rate-unit" id="countRashadi">0 Coins Owned</div>
                     </div>
-
                     <div class="rate-card coin-card">
                         <img src="../assets/coins/english_coin.png" alt="English Coin" class="coin-img" />
                         <div class="rate-karat">English</div>
                         <div class="rate-price" id="totalValueEnglish">0.00 JOD</div>
                         <div class="rate-unit" id="countEnglish">0 Coins Owned</div>
                     </div>
-
                     <div class="rate-card bar-card">
                         <img src="../assets/bars/gold-bar.jpg" alt="Gold Bar" class="bar-img" />
                         <div class="rate-karat">Gold Bars</div>
                         <div class="rate-price" id="totalValueBars">0.00 JOD</div>
                         <div class="rate-unit" id="countBars">Total Value</div>
                     </div>
-
                 </div>
             </section>
         </header>
@@ -129,8 +139,9 @@
                 <div class="col-md-4">
                     <label class="form-label">Search</label>
                     <div class="input-group">
-                        <span class="input-group-text bg-white border-end-0"><i
-                                class="bi bi-search text-muted"></i></span>
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="bi bi-search text-muted"></i>
+                        </span>
                         <input type="text" class="form-control border-start-0" placeholder="by name, type, karat...">
                     </div>
                 </div>
@@ -164,7 +175,6 @@
                     <div class="asset-card-image-wrapper">
                         <img src="../assets/images/gold-jewelry.png" alt="Gold Ring" class="asset-card-image">
                     </div>
-
                     <div class="asset-card-body">
                         <div class="mb-2">
                             <span class="badge rounded-pill bg-light text-dark border">Ring | 21K</span>
@@ -172,7 +182,6 @@
                         <h6 class="fw-bold mb-1">Engagement Gold Ring</h6>
                         <p class="text-muted small mb-0">Weight: 4.50g | Purchased: 2026-02-14</p>
                         <p class="text-muted small mb-3">Buy Price: 210 JOD</p>
-
                         <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
                             <span class="text-muted small">Current Value:</span>
                             <span class="fw-bold text-dark fs-5">220.90 JOD</span>
@@ -188,7 +197,6 @@
                     <div class="asset-card-image-wrapper">
                         <img src="../assets/coins/rashadi_coin.png" alt="Rashadi Coin" class="asset-card-image">
                     </div>
-
                     <div class="asset-card-body">
                         <div class="mb-2">
                             <span class="badge rounded-pill bg-light text-dark border">Coin | Rashadi</span>
@@ -196,7 +204,6 @@
                         <h6 class="fw-bold mb-1">Rashadi Gold Lira</h6>
                         <p class="text-muted small mb-0">Weight: 7.20g | Purchased: 2026-03-01</p>
                         <p class="text-muted small mb-3">Buy Price: 410 JOD</p>
-
                         <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
                             <span class="text-muted small">Current Value:</span>
                             <span class="fw-bold text-danger fs-5">406.70 JOD</span>
@@ -211,7 +218,6 @@
                     <div class="asset-card-image-wrapper">
                         <img src="../assets/bars/gold-bar.jpg" alt="Gold Bar" class="asset-card-image">
                     </div>
-
                     <div class="asset-card-body">
                         <div class="mb-2">
                             <span class="badge rounded-pill bg-light text-dark border">Bar | 24K</span>
@@ -219,7 +225,6 @@
                         <h6 class="fw-bold mb-1">PAMP Suisse 10g Bar</h6>
                         <p class="text-muted small mb-0">Weight: 10.00g | Purchased: 2026-01-10</p>
                         <p class="text-muted small mb-3">Buy Price: 780 JOD</p>
-
                         <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
                             <span class="text-muted small">Current Value:</span>
                             <span class="fw-bold text-dark fs-5">804.20 JOD</span>
@@ -231,6 +236,7 @@
         </section>
     </main>
 
+    <!-- ADD ASSET MODAL -->
     <div class="modal fade" id="addAssetModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content shadow-lg">
@@ -249,7 +255,6 @@
                                 <option value="Coins">Coins</option>
                             </select>
                         </div>
-
                         <div class="mb-3">
                             <label class="form-label">Karat</label>
                             <select class="form-select" required>
@@ -258,7 +263,6 @@
                                 <option value="18K">18 K</option>
                             </select>
                         </div>
-
                         <div id="jewelryOptions" class="mb-3 hidden-field">
                             <label class="form-label">Category</label>
                             <select class="form-select" id="jewelryCategory">
@@ -270,7 +274,6 @@
                                 <option value="Other">Other Jewelry</option>
                             </select>
                         </div>
-
                         <div id="coinOptions" class="mb-3 hidden-field">
                             <label class="form-label">Coin Type</label>
                             <select class="form-select" id="coinCategory">
@@ -279,7 +282,6 @@
                                 <option value="Other">Other Coin</option>
                             </select>
                         </div>
-
                         <div class="row g-3">
                             <div class="col-6">
                                 <label class="form-label">Buy Price (JOD)</label>
@@ -290,13 +292,11 @@
                                 <input type="number" step="0.01" class="form-control" placeholder="1.00" required>
                             </div>
                         </div>
-
                         <div class="my-3">
                             <label class="form-label">Purchase Date</label>
                             <input type="date" class="form-control" id="purchaseDate" required>
                             <small class="text-muted">Future dates are disabled.</small>
                         </div>
-
                         <div class="mb-2">
                             <label class="form-label">Description / Custom Name</label>
                             <input type="text" class="form-control" placeholder="e.g. Wedding Gift, Family Heirloom">
@@ -311,24 +311,51 @@
         </div>
     </div>
 
-    <!-- <footer class="footer mt-5">
-        <p>© 2026 GoldOverview.</span></p>
-    </footer> -->
+    <!-- PROFILE MODAL -->
+    <div class="modal fade" id="profileModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="d-flex justify-content-end p-2">
+                    <button type="button" class="btn-close xBtn" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4 pt-0">
+                    <div class="text-center mb-4">
+                        <img id="profileModalPic" src="../assets/images/female.png" alt="Profile Avatar" width="80" height="80" class="rounded-circle mb-3 shadow" style="border: 3px solid var(--gold);">
+                        <h1 class="h3" id="profileModalName">My Profile</h1>
+                        <p class="text-muted">Your account information</p>
+                    </div>
+                    <form>
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label class="form-label text-muted mb-1">First Name</label>
+                                <input type="text" class="form-control" id="profileFirstName" readonly>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label text-muted mb-1">Last Name</label>
+                                <input type="text" class="form-control" id="profileLastName" readonly>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-muted mb-1">Email Address</label>
+                            <input type="email" class="form-control" id="profileEmail" readonly>
+                        </div>
+                        <div class="mb-5">
+                            <label class="form-label text-muted mb-1">Gender</label>
+                            <input type="text" class="form-control" id="profileGender" readonly>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../js/myAssets.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-sha256@0.9.0/src/sha256.min.js"></script>
     <script src="../js/auth.js"></script>
-    <script>
-        function isLoggedIn() {
-            return sessionStorage.getItem("currentUser") !== null;
-        }
-        function requireAuth() {
-            if (!isLoggedIn()) {
-                window.location.href = '../html/index.html';
-            }
-        }
-        requireAuth();
-    </script>
+    <script src="../js/myAssets.js"></script>
+
+
+
 </body>
 
 </html>
