@@ -70,10 +70,11 @@ function updateNavbar(isLoggedIn) {
         var nameEl = document.getElementById('navProfileName');
         if (nameEl) nameEl.textContent = currentUser.firstName || '';
 
-        // Set avatar based on gender
+        // Set avatar based on gender (handling 'm', 'M', 'male', 'Male')
         var imgEl = document.getElementById('navProfileImg');
         if (imgEl) {
-            imgEl.src = currentUser.gender === 'm'
+            var g = (currentUser.gender || '').toLowerCase();
+            imgEl.src = (g === 'm' || g === 'male')
                 ? '../assets/images/male.png'
                 : '../assets/images/female.png';
         }
@@ -91,8 +92,9 @@ function updateNavbar(isLoggedIn) {
         var genderEl = document.getElementById('profileModalGender');
         if (genderEl) genderEl.textContent = currentUser.gender === 'm' ? 'Male' : currentUser.gender === 'f' ? 'Female' : '—';
 
+        var g = (currentUser.gender || '').toLowerCase();
         var picEl = document.getElementById('profileModalPic');
-        if (picEl) picEl.src = currentUser.gender === 'm' ? '../assets/images/male.png' : '../assets/images/female.png';
+        if (picEl) picEl.src = (g === 'm' || g === 'male') ? '../assets/images/male.png' : '../assets/images/female.png';
 
     } else {
         authButtons.style.display = 'flex';
