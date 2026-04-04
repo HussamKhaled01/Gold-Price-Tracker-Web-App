@@ -227,7 +227,7 @@ function renderInventory(assets) {
 
         const cardHtml = `
         <div class="col-md-4 col-lg-3">
-            <article class="asset-item-card position-relative" style="${borderStyle}">
+            <article class="asset-item-card position-relative" style="${borderStyle} cursor:pointer;" onclick="openAssetDetail(${asset.id})">
                 <span class="profit-indicator ${profitClass}">
                     ${profitSign}${profitPct}%
                 </span>
@@ -466,4 +466,62 @@ document.querySelectorAll('.dropdown-item').forEach(el => {
     }
 });
 
+// ── ASSET DETAIL MODAL ───────────────────────────────────────────────────────
+let selectedAssetId = null;
 
+function openAssetDetail(assetId) {
+    const assets = getUserAssets();
+    const asset  = assets.find(a => a.id === assetId);
+    if (!asset) return;
+
+    selectedAssetId = assetId;
+
+    const buyUSD     = parseFloat(asset.buyPrice) / USD_TO_JOD;
+    const currentUSD = getCurrentValueUSD(asset);
+    const profitUSD  = currentUSD - buyUSD;
+    const profitPct  = buyUSD > 0 ? ((profitUSD / buyUSD) * 100).toFixed(1) : 0;
+    const isProfit   = profitUSD >= 0;
+    const sign       = isProfit ? '+' : '';
+
+    document.getElementById('detailImg').src        = getAssetImage(asset.type, asset.category);
+    document.getElementById('detailName').textContent = asset.description || 'Gold Asset';
+    document.getElementById('detailBadge').textContent = `${asset.category || asset.type} · ${asset.karat}`;
+    document.getElementById('detailWeight').textContent = `${asset.weight} g`;
+    document.getElementById('detailKarat').textContent  = asset.karat;
+    document.getElementById('detailBuyPrice').textContent    = formatMoney(buyUSD);
+    document.getElementById('detailCurrentVal').textContent  = formatMoney(currentUSD);
+    document.getElementById('detailCurrentVal').style.color  = isProfit ? '#27ae60' : '#e74c3c';
+    document.getElementById('detailDate').textContent = asset.date;
+
+    const pnlBar = document.getElementById('detailPnlBar');
+    const pnlVal = document.getElementById('detailPnlVal');
+    pnlBar.style.background = isProfit ? 'rgba(39,174,96,0.08)'  : 'rgba(231,76,60,0.08)';
+    pnlBar.style.border     = isProfit ? '1px solid rgba(39,174,96,0.2)' : '1px solid rgba(231,76,60,0.2)';
+    pnlVal.style.color      = isProfit ? '#27ae60' : '#e74c3c';
+    pnlVal.textContent      = `${sign}${formatMoney(Math.abs(profitUSD))} · ${sign}${profitPct}%`;
+
+    new bootstrap.Modal(document.getElementById('assetDetailModal')).show();
+}
+
+function deleteAsset(assetId) {
+    const key    = `assets_${currentUser.email}`;
+    let assets   = getUserAssets();
+    assets       = assets.filter(a => a.id !== assetId);
+    localStorage.setItem(key, JSON.stringify(assets));
+
+    bootstrap.Modal.getInstance(document.getElementById('assetDetailModal'))?.hide();
+    updatePortfolioSummary(getUserAssets());
+    renderInventory(getUserAssets());
+    refreshTicker();
+}
+
+document.getElementById('deleteAssetBtn')?.addEventListener('click', () => {
+    if (!selectedAssetId) return;
+    
+    const confirmed = confirm('Are you sure you want to delete this asset?\nThis action cannot be undone.');
+    
+    if (confirmed) {
+        deleteAsset(selectedAssetId);
+        alert('✅ The asset was successfully deleted.');
+    }
+});
