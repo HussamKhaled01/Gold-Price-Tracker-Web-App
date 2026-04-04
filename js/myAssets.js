@@ -4,21 +4,20 @@
  */
 
 // ── GLOBALS ──────────────────────────────────────────────────────────────────
-const assetUser    = JSON.parse(sessionStorage.getItem('currentUser'));
+const assetUser     = JSON.parse(sessionStorage.getItem('currentUser'));
 const selectImg     = document.getElementById('profilePic');
 const USD_TO_JOD    = 0.709;
 const TROY_OZ_TO_G  = 31.1035;
 
-let currentCurrency     = 'USD';   // active display currency
-let currentOzPriceUSD   = 0;       // live gold price per troy oz in USD
+let currentCurrency     = 'USD';
+let currentOzPriceUSD   = 0;
 
 // ── AUTH GUARD ───────────────────────────────────────────────────────────────
-if (!assetUser  || !assetUser .isLoggedIn) {
+if (!assetUser || !assetUser.isLoggedIn) {
     window.location.href = '../html/index.html';
 }
 
 // ── SIGN OUT ──────────────────────────────────────────────────────────────────
-// Works for every element with class "sign-out-link" (including the dropdown item)
 document.querySelectorAll('.sign-out-link, [data-action="signout"]').forEach(el => {
     el.addEventListener('click', (e) => {
         e.preventDefault();
@@ -27,7 +26,6 @@ document.querySelectorAll('.sign-out-link, [data-action="signout"]').forEach(el 
     });
 });
 
-// Also hook the specific dropdown Sign Out anchor by href pattern
 document.querySelectorAll('a.dropdown-item.text-danger').forEach(el => {
     if (el.textContent.trim().toLowerCase().includes('sign out')) {
         el.addEventListener('click', (e) => {
@@ -42,18 +40,22 @@ document.querySelectorAll('a.dropdown-item.text-danger').forEach(el => {
 function setCurrency(cur) {
     currentCurrency = cur;
 
-    // Update all toggle buttons across the page
-    document.querySelectorAll('#btnUSD, #btnJOD, .toggle-btn').forEach(btn => {
+    // Update all toggle buttons
+    document.querySelectorAll('.toggle-btn, .ctoggle').forEach(function(btn) {
         btn.classList.remove('active');
     });
 
-    const activeBtn = document.getElementById('btn' + cur);
-    if (activeBtn) activeBtn.classList.add('active');
+    // Set active on matched buttons
+    document.querySelectorAll('.toggle-btn, .ctoggle').forEach(function(btn) {
+        if (btn.textContent.trim() === cur) {
+            btn.classList.add('active');
+        }
+    });
 
-    // Re-render everything with new currency
     if (currentOzPriceUSD > 0) {
         updatePortfolioSummary(getUserAssets());
         renderInventory(getUserAssets());
+        refreshTicker();
     }
 }
 
@@ -74,32 +76,28 @@ function formatMoney(usdVal, decimals = 2) {
 
 // ── ASSET IMAGE MAP ───────────────────────────────────────────────────────────
 function getAssetImage(type, category) {
-    if (type === 'Bars')   return '../assets/bars/gold-bar.png';
-    if (category === 'Rashadi') return '../assets/coins/rashadi_coin.png';
-    if (category === 'English') return '../assets/coins/english_coin.png';
-    if (category === 'Necklace') return '../assets/jewelry/necklace.png';
-    if (category === 'Anklet') return '../assets/jewelry/anklet.png';
-    if (category === 'Belt') return '../assets/jewelry/belt.png';
-    if (category === 'Ring') return '../assets/jewelry/ring.png';
-    if (category === 'Watch') return '../assets/jewelry/watch.png';
-    return '../assets/images/gold-jewelry.png'; // default jewelry
+    if (type === 'Bars')            return '../assets/bars/gold-bar.png';
+    if (category === 'Rashadi')     return '../assets/coins/rashadi_coin.png';
+    if (category === 'English')     return '../assets/coins/english_coin.png';
+    if (category === 'Necklace')    return '../assets/jewelry/necklace.png';
+    if (category === 'Anklet')      return '../assets/jewelry/anklet.png';
+    if (category === 'Belt')        return '../assets/jewelry/belt.png';
+    if (category === 'Ring')        return '../assets/jewelry/ring.png';
+    if (category === 'Watch')       return '../assets/jewelry/watch.png';
+    return '../assets/images/gold-jewelry.png';
 }
 
 // ── KARAT LABEL ───────────────────────────────────────────────────────────────
 function karatNum(karatStr) {
-    return parseInt(karatStr) || 21; // default 21K
+    return parseInt(karatStr) || 21;
 }
 
 // ── CURRENT VALUE OF AN ASSET ─────────────────────────────────────────────────
-/**
- * Returns the live USD value of one asset based on weight × karat gram price.
- * Coins use fixed weights; bars and jewelry use the stored weight.
- */
 function getCurrentValueUSD(asset) {
     if (currentOzPriceUSD === 0) return 0;
 
-    const RASHADI_G = 6.494;  // ~21.6K gold content
-    const ENGLISH_G = 7.322;  // ~22K gold content
+    const RASHADI_G = 6.494;
+    const ENGLISH_G = 7.322;
 
     if (asset.category === 'Rashadi') {
         return gramPrice(currentOzPriceUSD, 21.6) * RASHADI_G;
@@ -115,23 +113,23 @@ function getCurrentValueUSD(asset) {
 
 // ── USER ASSETS FROM LOCALSTORAGE ────────────────────────────────────────────
 function getUserAssets() {
-    const key = `assets_${currentUser.email}`;
+    const key = `assets_${assetUser.email}`;
     return JSON.parse(localStorage.getItem(key)) || [];
 }
 
 // ── UPDATE USER INFO (name, avatar) ──────────────────────────────────────────
 function updateUserInfo() {
     document.querySelectorAll('.fullName').forEach(el => {
-        el.innerText = `${currentUser.firstName} ${currentUser.lastName}`;
+        el.innerText = `${assetUser.firstName} ${assetUser.lastName}`;
     });
 
     const headerTitle = document.querySelector('h1.serif');
     if (headerTitle) {
-        headerTitle.innerHTML = `${currentUser.firstName}'s Gold <em>Overview</em>`;
+        headerTitle.innerHTML = `${assetUser.firstName}'s Gold <em>Overview</em>`;
     }
 
     if (selectImg) {
-        selectImg.src = currentUser.gender === 'm'
+        selectImg.src = assetUser.gender === 'm'
             ? '../assets/images/male.png'
             : '../assets/images/female.png';
     }
@@ -147,7 +145,7 @@ function updatePortfolioSummary(assets) {
     };
 
     assets.forEach(asset => {
-        const val = getCurrentValueUSD(asset); // live value, not buy price
+        const val = getCurrentValueUSD(asset);
 
         if (asset.type === 'Bars') {
             summary.Bars += val;
@@ -158,18 +156,18 @@ function updatePortfolioSummary(assets) {
             summary.English.total += val;
             summary.English.count++;
         } else {
-            const k = asset.karat; // '24K', '21K', '18K'
+            const k = asset.karat;
             if (summary[k] !== undefined) summary[k] += val;
         }
     });
 
     const mapping = [
-        { id: 'totalValue24',      val: summary['24K'],           selector: '.karat24'              },
-        { id: 'totalValue21',      val: summary['21K'],           selector: '.karat21'              },
-        { id: 'totalValue18',      val: summary['18K'],           selector: '.karat18'              },
-        { id: 'totalValueBars',    val: summary.Bars,             selector: '.bar-card'             },
-        { id: 'totalValueRashadi', val: summary.Rashadi.total,    selector: '.coin-card:nth-of-type(4)', countId: 'countRashadi', count: summary.Rashadi.count },
-        { id: 'totalValueEnglish', val: summary.English.total,    selector: '.coin-card:nth-of-type(5)', countId: 'countEnglish', count: summary.English.count }
+        { id: 'totalValue24',      val: summary['24K'],        selector: '.karat24' },
+        { id: 'totalValue21',      val: summary['21K'],        selector: '.karat21' },
+        { id: 'totalValue18',      val: summary['18K'],        selector: '.karat18' },
+        { id: 'totalValueBars',    val: summary.Bars,          selector: '.bar-card' },
+        { id: 'totalValueRashadi', val: summary.Rashadi.total, selector: '.coin-card:nth-of-type(4)', countId: 'countRashadi', count: summary.Rashadi.count },
+        { id: 'totalValueEnglish', val: summary.English.total, selector: '.coin-card:nth-of-type(5)', countId: 'countEnglish', count: summary.English.count }
     ];
 
     mapping.forEach(item => {
@@ -203,23 +201,22 @@ function renderInventory(assets) {
     }
 
     assets.forEach(asset => {
-        const imgSrc       = getAssetImage(asset.type, asset.category);
-        const buyPriceUSD  = parseFloat(asset.buyPrice) || 0;  // stored as JOD, handle below
+        const imgSrc        = getAssetImage(asset.type, asset.category);
+        const buyPriceJOD   = parseFloat(asset.buyPrice) || 0;
         const currentValUSD = getCurrentValueUSD(asset);
 
-        // buy price was stored in JOD → convert to USD for comparison
-        const buyPriceUSDEquiv = buyPriceUSD / USD_TO_JOD;
+        const buyPriceUSDEquiv = buyPriceJOD / USD_TO_JOD;
         const profitUSD = currentValUSD - buyPriceUSDEquiv;
         const profitPct = buyPriceUSDEquiv > 0
             ? ((profitUSD / buyPriceUSDEquiv) * 100).toFixed(1)
             : 0;
 
-        const isProfit = profitUSD >= 0;
-        const profitClass   = isProfit ? 'bg-profit'  : 'bg-loss';
-        const valueColor    = isProfit ? 'text-success' : 'text-danger';
-        const borderStyle   = isProfit ? '' : 'border-left: 4px solid var(--loss-red) !important;';
-        const profitSign    = isProfit ? '+' : '-';
-        const profitLabel   = isProfit ? 'Profit' : 'Loss';
+        const isProfit    = profitUSD >= 0;
+        const profitClass = isProfit ? 'bg-profit' : 'bg-loss';
+        const valueColor  = isProfit ? 'text-success' : 'text-danger';
+        const borderStyle = isProfit ? '' : 'border-left: 4px solid var(--loss-red) !important;';
+        const profitSign  = isProfit ? '+' : '-';
+        const profitLabel = isProfit ? 'Profit' : 'Loss';
 
         const label = asset.category
             ? `${asset.category} | ${asset.karat}`
@@ -241,7 +238,6 @@ function renderInventory(assets) {
                     <h6 class="fw-bold mb-1">${asset.description || 'Gold Asset'}</h6>
                     <p class="text-muted small mb-0">Weight: ${asset.weight}g | Date: ${asset.date}</p>
                     <p class="text-muted small mb-1">Buy Price: ${formatMoney(buyPriceUSDEquiv)}</p>
-
                     <div class="mt-auto pt-3 border-top">
                         <div class="d-flex justify-content-between align-items-center mb-1">
                             <span class="text-muted small">Current Value:</span>
@@ -266,12 +262,11 @@ function renderInventory(assets) {
 document.getElementById('assetForm')?.addEventListener('submit', function (e) {
     e.preventDefault();
 
-    const storageKey = `assets_${currentUser.email}`;
+    const storageKey = `assets_${assetUser.email}`;
     const userAssets = JSON.parse(localStorage.getItem(storageKey)) || [];
 
     const typeVal = document.getElementById('typeSelect').value;
 
-    // Grab karat from second select in the modal
     const karatSelect = document.querySelector('#addAssetModal .modal-body select.form-select:nth-of-type(2)');
     const karatVal = karatSelect ? karatSelect.value : '21K';
 
@@ -288,7 +283,7 @@ document.getElementById('assetForm')?.addEventListener('submit', function (e) {
         type:        typeVal,
         karat:       karatVal,
         category:    categoryVal,
-        buyPrice:    priceInputs[0]?.value || 0,   // stored in JOD
+        buyPrice:    priceInputs[0]?.value || 0,
         weight:      priceInputs[1]?.value || 0,
         date:        document.getElementById('purchaseDate').value,
         description: document.querySelector('#addAssetModal input[placeholder*="e.g."]')?.value || ''
@@ -330,18 +325,12 @@ function applyFilters() {
         );
     }
 
-    if (typeVal !== 'all') {
-        assets = assets.filter(a => a.type === typeVal);
-    }
-
-    if (karatVal !== 'all') {
-        assets = assets.filter(a => a.karat === karatVal);
-    }
+    if (typeVal !== 'all') assets = assets.filter(a => a.type === typeVal);
+    if (karatVal !== 'all') assets = assets.filter(a => a.karat === karatVal);
 
     renderInventory(assets);
 }
 
-// Attach filter listeners after DOM ready
 function attachFilterListeners() {
     const filterSection = document.querySelector('.filter-section');
     if (!filterSection) return;
@@ -349,7 +338,19 @@ function attachFilterListeners() {
     filterSection.querySelectorAll('select').forEach(s => s.addEventListener('change', applyFilters));
 }
 
-// ── LIVE PRICE FETCH (reuses app.js global or fetches independently) ──────────
+// ── MOBILE MENU TOGGLE ────────────────────────────────────────────────────────
+document.getElementById('navToggle')?.addEventListener('click', function () {
+    document.getElementById('mobileMenu')?.classList.toggle('open');
+});
+
+// Close mobile menu when a link is clicked
+document.querySelectorAll('#mobileMenu a').forEach(function (link) {
+    link.addEventListener('click', function () {
+        document.getElementById('mobileMenu')?.classList.remove('open');
+    });
+});
+
+// ── LIVE PRICE FETCH ──────────────────────────────────────────────────────────
 function fetchAndRefresh() {
     const GOLD_API_URL = 'https://api.gold-api.com/price/XAU';
     fetch(GOLD_API_URL)
@@ -367,12 +368,12 @@ function fetchAndRefresh() {
         .finally(() => {
             updatePortfolioSummary(getUserAssets());
             renderInventory(getUserAssets());
-            refreshTicker(); // ← هاد السطر الجديد بس
+            refreshTicker();
         });
 }
 
 function refreshTicker() {
-    const oz  = currentOzPriceUSD;
+    const oz = currentOzPriceUSD;
     if (!oz) return;
 
     const g24     = oz / TROY_OZ_TO_G;
@@ -399,7 +400,7 @@ function refreshTicker() {
 
     const track = document.getElementById('tickerTrack');
     if (track) track.innerHTML = [...items, ...items]
-        .map(t => `<span class="ticker-item">🔶 ${t}</span>`)
+        .map(t => `<span class="ticker-item">🪙 ${t}</span>`)
         .join('');
 }
 
@@ -408,63 +409,37 @@ function initApp() {
     updateUserInfo();
     attachFilterListeners();
 
-    // Disable future dates in purchase date input
     const dateInput = document.getElementById('purchaseDate');
     if (dateInput) dateInput.max = new Date().toISOString().split('T')[0];
 
-    // Initial render with loading state
+    // عبّي الـ profile modal كل مرة يتفتح
+    document.getElementById('profileModal')?.addEventListener('show.bs.modal', function () {
+        const assets = getUserAssets();
+
+        const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val || '—'; };
+        setVal('profileModalName',   `${assetUser.firstName} ${assetUser.lastName}`);
+        setVal('profileModalEmail',   assetUser.email);
+        setVal('profileModalFirst',   assetUser.firstName);
+        setVal('profileModalLast',    assetUser.lastName);
+        setVal('profileModalEmail2',  assetUser.email);
+        setVal('profileModalGender',  assetUser.gender === 'm' ? 'Male' : 'Female');
+        setVal('profileModalJoined',  assetUser.joinedDate || new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }));
+        setVal('profileModalCount',   String(assets.length));
+
+        const picEl = document.getElementById('profileModalPic');
+        if (picEl) picEl.src = assetUser.gender === 'm' ? '../assets/images/male.png' : '../assets/images/female.png';
+
+        const totalJOD = assets.reduce((sum, a) => sum + (getCurrentValueUSD(a) * USD_TO_JOD), 0);
+        setVal('profileModalValue', totalJOD.toFixed(0));
+    });
+
     updatePortfolioSummary(getUserAssets());
     renderInventory(getUserAssets());
-
-    // Fetch live gold price then re-render
     fetchAndRefresh();
-
-    // Refresh price every 60 seconds
     setInterval(fetchAndRefresh, 60000);
 }
 
 document.addEventListener('DOMContentLoaded', initApp);
-
-
-// ── PROFILE MODAL ─────────────────────────────────────────────────────────────
-function openProfileModal() {
-    const assets = getUserAssets();
-
-    // Fill basic info
-    document.getElementById('profileModalName').textContent  = `${currentUser.firstName} ${currentUser.lastName}`;
-    document.getElementById('profileModalEmail').textContent = currentUser.email;
-    document.getElementById('profileModalEmail2').textContent= currentUser.email;
-    document.getElementById('profileModalFirst').textContent = currentUser.firstName;
-    document.getElementById('profileModalLast').textContent  = currentUser.lastName;
-    document.getElementById('profileModalGender').textContent= currentUser.gender === 'm' ? 'Male' : 'Female';
-    document.getElementById('profileModalJoined').textContent= new Date().getFullYear();
-
-    // Avatar
-    document.getElementById('profileModalPic').src = currentUser.gender === 'm'
-        ? '../assets/images/male.png'
-        : '../assets/images/female.png';
-
-    // Stats
-    document.getElementById('profileModalCount').textContent = assets.length;
-
-    const totalJOD = assets.reduce((sum, a) => {
-        return sum + toDisplay(getCurrentValueUSD(a));
-    }, 0);
-    document.getElementById('profileModalValue').textContent = totalJOD.toFixed(0);
-
-    // Show modal
-    new bootstrap.Modal(document.getElementById('profileModal')).show();
-}
-
-// Hook "My Profile" dropdown item
-document.querySelectorAll('.dropdown-item').forEach(el => {
-    if (el.textContent.trim().toLowerCase().includes('my profile')) {
-        el.addEventListener('click', (e) => {
-            e.preventDefault();
-            openProfileModal();
-        });
-    }
-});
 
 // ── ASSET DETAIL MODAL ───────────────────────────────────────────────────────
 let selectedAssetId = null;
@@ -483,19 +458,19 @@ function openAssetDetail(assetId) {
     const isProfit   = profitUSD >= 0;
     const sign       = isProfit ? '+' : '';
 
-    document.getElementById('detailImg').src        = getAssetImage(asset.type, asset.category);
-    document.getElementById('detailName').textContent = asset.description || 'Gold Asset';
-    document.getElementById('detailBadge').textContent = `${asset.category || asset.type} · ${asset.karat}`;
-    document.getElementById('detailWeight').textContent = `${asset.weight} g`;
-    document.getElementById('detailKarat').textContent  = asset.karat;
-    document.getElementById('detailBuyPrice').textContent    = formatMoney(buyUSD);
-    document.getElementById('detailCurrentVal').textContent  = formatMoney(currentUSD);
-    document.getElementById('detailCurrentVal').style.color  = isProfit ? '#27ae60' : '#e74c3c';
-    document.getElementById('detailDate').textContent = asset.date;
+    document.getElementById('detailImg').src             = getAssetImage(asset.type, asset.category);
+    document.getElementById('detailName').textContent    = asset.description || 'Gold Asset';
+    document.getElementById('detailBadge').textContent   = `${asset.category || asset.type} · ${asset.karat}`;
+    document.getElementById('detailWeight').textContent  = `${asset.weight} g`;
+    document.getElementById('detailKarat').textContent   = asset.karat;
+    document.getElementById('detailBuyPrice').textContent   = formatMoney(buyUSD);
+    document.getElementById('detailCurrentVal').textContent = formatMoney(currentUSD);
+    document.getElementById('detailCurrentVal').style.color = isProfit ? '#27ae60' : '#e74c3c';
+    document.getElementById('detailDate').textContent    = asset.date;
 
     const pnlBar = document.getElementById('detailPnlBar');
     const pnlVal = document.getElementById('detailPnlVal');
-    pnlBar.style.background = isProfit ? 'rgba(39,174,96,0.08)'  : 'rgba(231,76,60,0.08)';
+    pnlBar.style.background = isProfit ? 'rgba(39,174,96,0.08)' : 'rgba(231,76,60,0.08)';
     pnlBar.style.border     = isProfit ? '1px solid rgba(39,174,96,0.2)' : '1px solid rgba(231,76,60,0.2)';
     pnlVal.style.color      = isProfit ? '#27ae60' : '#e74c3c';
     pnlVal.textContent      = `${sign}${formatMoney(Math.abs(profitUSD))} · ${sign}${profitPct}%`;
@@ -504,9 +479,9 @@ function openAssetDetail(assetId) {
 }
 
 function deleteAsset(assetId) {
-    const key    = `assets_${currentUser.email}`;
-    let assets   = getUserAssets();
-    assets       = assets.filter(a => a.id !== assetId);
+    const key  = `assets_${assetUser.email}`;
+    let assets = getUserAssets();
+    assets     = assets.filter(a => a.id !== assetId);
     localStorage.setItem(key, JSON.stringify(assets));
 
     bootstrap.Modal.getInstance(document.getElementById('assetDetailModal'))?.hide();
@@ -517,9 +492,8 @@ function deleteAsset(assetId) {
 
 document.getElementById('deleteAssetBtn')?.addEventListener('click', () => {
     if (!selectedAssetId) return;
-    
+
     const confirmed = confirm('Are you sure you want to delete this asset?\nThis action cannot be undone.');
-    
     if (confirmed) {
         deleteAsset(selectedAssetId);
         alert('✅ The asset was successfully deleted.');
