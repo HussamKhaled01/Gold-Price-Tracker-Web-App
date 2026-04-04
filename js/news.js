@@ -34,10 +34,15 @@ async function loadNews() {
   }
 
   // 2. Try Fetch with Timeout
-  console.log("Fetching live news from GNews...");
+  var isGitHubPages = window.location.hostname.includes('github.io');
+  console.log("Fetching live news from GNews... (Production Mode: " + isGitHubPages + ")");
+
   try {
+    // If on GitHub Pages, we know GNews often blocks CORS. 
+    // We'll still try, but with a shorter timeout to show fallbacks faster.
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+    const timeoutThreshold = isGitHubPages ? 4000 : 8000;
+    const timeoutId = setTimeout(() => controller.abort(), timeoutThreshold);
 
     const res = await fetch(NEWS_API_URL, { signal: controller.signal });
     clearTimeout(timeoutId);
@@ -50,7 +55,6 @@ async function loadNews() {
     const data = await res.json();
     if (data && data.articles && data.articles.length > 0) {
       console.log("Live news fetched successfully. Count:", data.articles.length);
-      // Cache the result
       localStorage.setItem('savedGoldNewsV3', JSON.stringify(data));
       localStorage.setItem('savedGoldNewsTimeV3', now.toString());
       renderNews(data.articles);
@@ -60,9 +64,9 @@ async function loadNews() {
     }
   } catch (error) {
     if (error.name === 'AbortError') {
-      console.warn("News fetch timed out. Triggering fallback.");
+      console.warn("News fetch timed out (" + (isGitHubPages ? 'Production' : 'Local') + "). Triggering fallback.");
     } else {
-      console.warn("Error fetching news from API:", error);
+      console.warn("Error fetching news from API (likely CORS on Deployment):", error);
     }
     renderFallbackNews();
   }

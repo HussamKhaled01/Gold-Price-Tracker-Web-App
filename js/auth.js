@@ -70,13 +70,22 @@ function updateNavbar(isLoggedIn) {
         var nameEl = document.getElementById('navProfileName');
         if (nameEl) nameEl.textContent = currentUser.firstName || '';
 
+        // Helper to resolve paths regardless of whether we are in root or /html/ folder
+        var resolveImagePath = function(path) {
+            // If we are at the root (index.html), we remove '../' from the assets path
+            var isRoot = window.location.pathname.endsWith('index.html') && !window.location.pathname.includes('/html/');
+            if (isRoot && path.startsWith('../')) {
+                return path.substring(3);
+            }
+            return path;
+        };
+
         // Set avatar based on gender (handling 'm', 'M', 'male', 'Male')
         var imgEl = document.getElementById('navProfileImg');
         if (imgEl) {
             var g = (currentUser.gender || '').toLowerCase();
-            imgEl.src = (g === 'm' || g === 'male')
-                ? '../assets/images/male.png'
-                : '../assets/images/female.png';
+            var avatarPath = (g === 'm' || g === 'male') ? '../assets/images/male.png' : '../assets/images/female.png';
+            imgEl.src = resolveImagePath(avatarPath);
         }
 
         // Populate profile modal fields
@@ -94,7 +103,10 @@ function updateNavbar(isLoggedIn) {
 
         var g = (currentUser.gender || '').toLowerCase();
         var picEl = document.getElementById('profileModalPic');
-        if (picEl) picEl.src = (g === 'm' || g === 'male') ? '../assets/images/male.png' : '../assets/images/female.png';
+        if (picEl) {
+            var modalPath = (g === 'm' || g === 'male') ? '../assets/images/male.png' : '../assets/images/female.png';
+            picEl.src = resolveImagePath(modalPath);
+        }
 
     } else {
         authButtons.style.display = 'flex';
