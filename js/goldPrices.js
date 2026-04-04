@@ -1,5 +1,5 @@
 // ---- CONFIG ------------------------------------------------------------------------------------------------------------
-var GOLD_API_KEY = '0b49e6587559bb4726df4202b9cbcc95690c212ba2ba24a398460b662e00018e';
+var GOLD_API_KEY = '9404f38900e589a465c2752aba93bd61991e8b4d1c484993fabd35fb438f4829';
 var GOLD_API_URL = 'https://api.gold-api.com/price/XAU';
 
 // Currency

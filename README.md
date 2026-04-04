@@ -4,6 +4,16 @@
 
 ---
 
+## 👥 Meet Team-2
+
+| Member | Role |
+| :--- | :--- |
+| **Salam Afaneh** | Scrum Master |
+| **Hanan Othman** | Product Owner |
+| **Hussam Al-khateeb** |
+
+---
+
 ## 🚀 Key Features
 
 ### 📊 Real-Time Market Data
@@ -58,16 +68,6 @@ Gold-Price-Tracker-Web-App/
 │   └── news.js         # News API integration
 └── README.md           # Project documentation
 ```
-
----
-
-## 👥 Meet Team-2
-
-| Member | Role |
-| :--- | :--- |
-| **Salam Afaneh** | Scrum Master |
-| **Hanan Othman** | Product Owner |
-| **Hussam Al-khateeb** |
 
 ---
 
