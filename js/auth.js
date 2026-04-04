@@ -56,22 +56,7 @@ function updateNavbar(isLoggedIn) {
     var authButtons = document.getElementById('navAuthButtons');
     var profileDropdown = document.getElementById('navProfileDropdown');
 
-    // OLD navbar style (myAssets page still uses loginBtn/logoutBtn directly)
-    if (authButtons === null && loginBtn !== null) {
-        if (isLoggedIn) {
-            if (loginBtn) loginBtn.style.display = 'none';
-            if (registerBtn) registerBtn.style.display = 'none';
-            if (logoutBtn) logoutBtn.style.display = 'inline-block';
-        } else {
-            if (loginBtn) loginBtn.style.display = 'inline-block';
-            if (registerBtn) registerBtn.style.display = 'inline-block';
-            if (logoutBtn) logoutBtn.style.display = 'none';
-        }
-        updateMobileMenu(isLoggedIn);
-        return;
-    }
-
-    // NEW navbar style (index + prices pages)
+    // NEW navbar style (index + prices + myAssets)
     if (authButtons === null || profileDropdown === null) {
         updateMobileMenu(isLoggedIn);
         return;
@@ -119,34 +104,12 @@ function updateNavbar(isLoggedIn) {
 
 function updateMobileMenu(isLoggedIn) {
     var mobileAuth = document.getElementById('mobileAuthButtons');
-    var mobileProfile = document.getElementById('mobileProfileSection');
-    if (!mobileAuth || !mobileProfile) return;
+    if (!mobileAuth) return;
 
     if (isLoggedIn) {
         mobileAuth.style.display = 'none';
-        mobileProfile.style.display = 'block';
-
-        var mobileNameEl = document.getElementById('mobileProfileName');
-        if (mobileNameEl) mobileNameEl.textContent = (currentUser.firstName || '') + ' ' + (currentUser.lastName || '');
-
-        var mobileImgEl = document.getElementById('mobileProfileImg');
-        if (mobileImgEl) {
-            mobileImgEl.src = currentUser.gender === 'm'
-                ? '../assets/images/male.png'
-                : '../assets/images/female.png';
-        }
     } else {
         mobileAuth.style.display = 'flex';
-        mobileProfile.style.display = 'none';
-    }
-
-    // Wire mobile logout button (only once)
-    var mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
-    if (mobileLogoutBtn && !mobileLogoutBtn._bound) {
-        mobileLogoutBtn.addEventListener('click', function () {
-            logout();
-        });
-        mobileLogoutBtn._bound = true;
     }
 }
 

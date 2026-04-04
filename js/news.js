@@ -33,6 +33,7 @@ async function loadNews() {
 
   try {
     const res = await fetch(NEWS_API_URL);
+    if (!res.ok) throw new Error('News API response not OK: ' + res.status);
     const data = await res.json();
     if (data && data.articles && data.articles.length) {
       // Cache the result in localStorage
