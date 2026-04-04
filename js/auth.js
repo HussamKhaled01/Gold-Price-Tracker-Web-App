@@ -67,11 +67,15 @@ function updateNavbar(isLoggedIn) {
             if (registerBtn) registerBtn.style.display = 'inline-block';
             if (logoutBtn) logoutBtn.style.display = 'none';
         }
+        updateMobileMenu(isLoggedIn);
         return;
     }
 
     // NEW navbar style (index + prices pages)
-    if (authButtons === null || profileDropdown === null) return;
+    if (authButtons === null || profileDropdown === null) {
+        updateMobileMenu(isLoggedIn);
+        return;
+    }
 
     if (isLoggedIn) {
         authButtons.style.display = 'none';
@@ -108,6 +112,41 @@ function updateNavbar(isLoggedIn) {
     } else {
         authButtons.style.display = 'flex';
         profileDropdown.style.display = 'none';
+    }
+
+    updateMobileMenu(isLoggedIn);
+}
+
+function updateMobileMenu(isLoggedIn) {
+    var mobileAuth = document.getElementById('mobileAuthButtons');
+    var mobileProfile = document.getElementById('mobileProfileSection');
+    if (!mobileAuth || !mobileProfile) return;
+
+    if (isLoggedIn) {
+        mobileAuth.style.display = 'none';
+        mobileProfile.style.display = 'block';
+
+        var mobileNameEl = document.getElementById('mobileProfileName');
+        if (mobileNameEl) mobileNameEl.textContent = (currentUser.firstName || '') + ' ' + (currentUser.lastName || '');
+
+        var mobileImgEl = document.getElementById('mobileProfileImg');
+        if (mobileImgEl) {
+            mobileImgEl.src = currentUser.gender === 'm'
+                ? '../assets/images/male.png'
+                : '../assets/images/female.png';
+        }
+    } else {
+        mobileAuth.style.display = 'flex';
+        mobileProfile.style.display = 'none';
+    }
+
+    // Wire mobile logout button (only once)
+    var mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+    if (mobileLogoutBtn && !mobileLogoutBtn._bound) {
+        mobileLogoutBtn.addEventListener('click', function () {
+            logout();
+        });
+        mobileLogoutBtn._bound = true;
     }
 }
 
