@@ -33,22 +33,35 @@ async function loadNews() {
 
   // 2. Try Fetch with Timeout
   var isGitHubPages = window.location.hostname.includes('github.io');
+  var targetUrl = NEWS_API_URL;
+  
+  // CORS Bypass for GitHub Pages deployment
+  if (isGitHubPages) {
+    targetUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(NEWS_API_URL);
+  }
 
   try {
-    // If on GitHub Pages, we know GNews often blocks CORS. 
-    // We'll still try, but with a shorter timeout to show fallbacks faster.
     const controller = new AbortController();
-    const timeoutThreshold = isGitHubPages ? 4000 : 8000;
+    const timeoutThreshold = isGitHubPages ? 6000 : 8000;
     const timeoutId = setTimeout(() => controller.abort(), timeoutThreshold);
 
-    const res = await fetch(NEWS_API_URL, { signal: controller.signal });
+    const res = await fetch(targetUrl, { signal: controller.signal });
     clearTimeout(timeoutId);
 
     if (!res.ok) {
       throw new Error('News API response not OK: ' + res.status);
     }
     
-    const data = await res.json();
+    let data;
+    const rawData = await res.json();
+    
+    // If using AllOrigins, the real data is in the 'contents' property as a string
+    if (isGitHubPages && rawData.contents) {
+      data = JSON.parse(rawData.contents);
+    } else {
+      data = rawData;
+    }
+
     if (data && data.articles && data.articles.length > 0) {
       localStorage.setItem('savedGoldNewsV3', JSON.stringify(data));
       localStorage.setItem('savedGoldNewsTimeV3', now.toString());
@@ -149,7 +162,7 @@ function renderFallbackNews() {
       {
         title: 'Gold ETF inflows surge amid market volatility',
         description: 'Exchange-traded funds backed by gold saw their largest monthly inflows in over three years as investors repositioned portfolios for potential inflation risks and currency fluctuations in major markets.',
-        image: 'https://images.unsplash.com/photo-1533077154101-0bc4ba6d4f1a?q=80&w=800&auto=format&fit=crop',
+        image: 'https://images.unsplash.com/photo-1611974764058-2c7000af420c?q=80&w=800&auto=format&fit=crop',
         url: 'https://www.cnbc.com/gold/',
         source: 'CNBC',
         date: 'Friday, April 10, 2026',
@@ -158,7 +171,7 @@ function renderFallbackNews() {
       {
         title: 'Physical gold demand spikes in Asia as festival season approaches',
         description: 'Retail gold demand in major Asian markets has shown resilience despite record high prices. Buyers are increasingly opting for smaller denominations and digital gold products.',
-        image: 'https://images.unsplash.com/photo-1599584448508-5470df4a0e91?q=80&w=800&auto=format&fit=crop',
+        image: 'https://images.unsplash.com/photo-1574352067721-72d5913bd35c?q=80&w=800&auto=format&fit=crop',
         url: 'https://www.kitco.com/news/',
         source: 'Kitco News',
         date: 'Thursday, April 9, 2026',
@@ -167,7 +180,7 @@ function renderFallbackNews() {
       {
         title: 'Mining sector updates: New exploration projects announced in Australia',
         description: 'Major mining companies have announced three new high-grade gold exploration projects in Western Australia, promising a boost to global production capacity over the next decade.',
-        image: 'https://images.unsplash.com/photo-1506452305024-9d3f02d1c9b2?q=80&w=800&auto=format&fit=crop',
+        image: 'https://images.unsplash.com/photo-1534067783941-51c9c23eccfd?q=80&w=800&auto=format&fit=crop',
         url: 'https://www.mining.com/tag/gold/',
         source: 'Mining.com',
         date: 'Wednesday, April 8, 2026',
