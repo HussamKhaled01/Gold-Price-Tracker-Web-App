@@ -13,8 +13,8 @@ async function loadNews() {
   var grid = document.getElementById('newsGrid');
   if (!grid) return;
 
-  var savedNewsStr = localStorage.getItem('savedGoldNewsV3');
-  var savedNewsTime = localStorage.getItem('savedGoldNewsTimeV3');
+  var savedNewsStr = localStorage.getItem('savedGoldNewsV4');
+  var savedNewsTime = localStorage.getItem('savedGoldNewsTimeV4');
   var now = new Date().getTime();
 
   // 1. Try Cache First
@@ -26,8 +26,8 @@ async function loadNews() {
         return;
       }
     } catch (e) {
-      localStorage.removeItem('savedGoldNewsV3');
-      localStorage.removeItem('savedGoldNewsTimeV3');
+      localStorage.removeItem('savedGoldNewsV4');
+      localStorage.removeItem('savedGoldNewsTimeV4');
     }
   }
 
@@ -59,8 +59,8 @@ async function loadNews() {
     data = rawData;
 
     if (data && data.articles && data.articles.length > 0) {
-      localStorage.setItem('savedGoldNewsV3', JSON.stringify(data));
-      localStorage.setItem('savedGoldNewsTimeV3', now.toString());
+      localStorage.setItem('savedGoldNewsV4', JSON.stringify(data));
+      localStorage.setItem('savedGoldNewsTimeV4', now.toString());
       renderNews(data.articles);
     } else {
       renderFallbackNews();
@@ -158,7 +158,7 @@ function renderFallbackNews() {
       {
         title: 'Gold ETF inflows surge amid market volatility',
         description: 'Exchange-traded funds backed by gold saw their largest monthly inflows in over three years as investors repositioned portfolios for potential inflation risks and currency fluctuations in major markets.',
-        image: 'https://images.unsplash.com/photo-1518458084722-67bc756c2c8f?auto=format&fit=crop&q=80&w=800',
+        image: 'https://plus.unsplash.com/premium_photo-1681223447330-3375836a04be?auto=format&fit=crop&q=80&w=800',
         url: 'https://www.cnbc.com/gold/',
         source: 'CNBC',
         date: 'Friday, April 10, 2026',
@@ -167,7 +167,7 @@ function renderFallbackNews() {
       {
         title: 'Physical gold demand spikes in Asia as festival season approaches',
         description: 'Retail gold demand in major Asian markets has shown resilience despite record high prices. Buyers are increasingly opting for smaller denominations and digital gold products.',
-        image: 'https://images.unsplash.com/photo-1610992015732-2449b0c26670?auto=format&fit=crop&q=80&w=800',
+        image: 'https://images.unsplash.com/photo-1628155930542-3c7a64e2c833?auto=format&fit=crop&q=80&w=800',
         url: 'https://www.kitco.com/news/',
         source: 'Kitco News',
         date: 'Thursday, April 9, 2026',
@@ -176,7 +176,7 @@ function renderFallbackNews() {
       {
         title: 'Mining sector updates: New exploration projects announced in Australia',
         description: 'Major mining companies have announced three new high-grade gold exploration projects in Western Australia, promising a boost to global production capacity over the next decade.',
-        image: 'https://images.unsplash.com/photo-1605152276897-4f618f831968?auto=format&fit=crop&q=80&w=800',
+        image: 'https://images.unsplash.com/photo-1596753100650-6a7f0532ec74?auto=format&fit=crop&q=80&w=800',
         url: 'https://www.mining.com/tag/gold/',
         source: 'Mining.com',
         date: 'Wednesday, April 8, 2026',
