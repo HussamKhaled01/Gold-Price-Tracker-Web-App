@@ -35,9 +35,9 @@ async function loadNews() {
   var isGitHubPages = window.location.hostname.includes('github.io');
   var targetUrl = NEWS_API_URL;
   
-  // CORS Bypass for GitHub Pages deployment
+  // CORS Bypass for GitHub Pages deployment using a robust proxy
   if (isGitHubPages) {
-    targetUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(NEWS_API_URL);
+    targetUrl = 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(NEWS_API_URL);
   }
 
   try {
@@ -55,12 +55,8 @@ async function loadNews() {
     let data;
     const rawData = await res.json();
     
-    // If using AllOrigins, the real data is in the 'contents' property as a string
-    if (isGitHubPages && rawData.contents) {
-      data = JSON.parse(rawData.contents);
-    } else {
-      data = rawData;
-    }
+    // Codetabs proxy returns the raw data directly, unlike AllOrigins
+    data = rawData;
 
     if (data && data.articles && data.articles.length > 0) {
       localStorage.setItem('savedGoldNewsV3', JSON.stringify(data));
@@ -135,7 +131,7 @@ function renderFallbackNews() {
         title: 'Gold prices hold near record highs as dollar weakens against major currencies',
         description: 'Gold prices remained near record levels on Friday as the U.S. dollar continued its descent against a basket of major currencies. Analysts suggest that continued geopolitical uncertainty is driving investors toward safe-haven assets.',
         content: 'Spot gold was trading at $3,085.20 per ounce, just shy of the all-time high of $3,102 set earlier this week.',
-        image: 'https://images.unsplash.com/photo-1610375461246-83df859d849d?q=80&w=800&auto=format&fit=crop',
+        image: 'https://images.unsplash.com/photo-1610375461246-83df859d849d?auto=format&fit=crop&q=80&w=800',
         url: 'https://www.reuters.com/markets/commodities/',
         source: 'Reuters',
         date: 'Monday, April 13, 2026',
@@ -144,7 +140,7 @@ function renderFallbackNews() {
       {
         title: 'Central bank gold purchases reach five-year high in Q1 2026',
         description: 'Central banks around the world bought a combined 290 tonnes of gold in the first quarter of 2026, marking a significant shift in global reserve management. Developing nations led the surge in acquisitions.',
-        image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=800&auto=format&fit=crop',
+        image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=800',
         url: 'https://www.bloomberg.com/markets/commodities',
         source: 'Bloomberg',
         date: 'Sunday, April 12, 2026',
@@ -153,7 +149,7 @@ function renderFallbackNews() {
       {
         title: 'XAU/USD technical analysis: Bulls maintain control above $3,000/oz',
         description: 'Gold\'s technical picture remains strongly bullish as prices consolidate above the psychological $3,000 level. Traders are watching for a breakout past the recent resistance at $3,150.',
-        image: 'https://images.unsplash.com/photo-1610375229632-c7158c35a537?q=80&w=800&auto=format&fit=crop',
+        image: 'https://images.unsplash.com/photo-1610375229632-c7158c35a537?auto=format&fit=crop&q=80&w=800',
         url: 'https://www.fxstreet.com/news?q=gold',
         source: 'FXStreet',
         date: 'Saturday, April 11, 2026',
@@ -162,7 +158,7 @@ function renderFallbackNews() {
       {
         title: 'Gold ETF inflows surge amid market volatility',
         description: 'Exchange-traded funds backed by gold saw their largest monthly inflows in over three years as investors repositioned portfolios for potential inflation risks and currency fluctuations in major markets.',
-        image: 'https://images.unsplash.com/photo-1611974764058-2c7000af420c?q=80&w=800&auto=format&fit=crop',
+        image: 'https://images.unsplash.com/photo-1518458084722-67bc756c2c8f?auto=format&fit=crop&q=80&w=800',
         url: 'https://www.cnbc.com/gold/',
         source: 'CNBC',
         date: 'Friday, April 10, 2026',
@@ -171,7 +167,7 @@ function renderFallbackNews() {
       {
         title: 'Physical gold demand spikes in Asia as festival season approaches',
         description: 'Retail gold demand in major Asian markets has shown resilience despite record high prices. Buyers are increasingly opting for smaller denominations and digital gold products.',
-        image: 'https://images.unsplash.com/photo-1574352067721-72d5913bd35c?q=80&w=800&auto=format&fit=crop',
+        image: 'https://images.unsplash.com/photo-1610992015732-2449b0c26670?auto=format&fit=crop&q=80&w=800',
         url: 'https://www.kitco.com/news/',
         source: 'Kitco News',
         date: 'Thursday, April 9, 2026',
@@ -180,7 +176,7 @@ function renderFallbackNews() {
       {
         title: 'Mining sector updates: New exploration projects announced in Australia',
         description: 'Major mining companies have announced three new high-grade gold exploration projects in Western Australia, promising a boost to global production capacity over the next decade.',
-        image: 'https://images.unsplash.com/photo-1534067783941-51c9c23eccfd?q=80&w=800&auto=format&fit=crop',
+        image: 'https://images.unsplash.com/photo-1605152276897-4f618f831968?auto=format&fit=crop&q=80&w=800',
         url: 'https://www.mining.com/tag/gold/',
         source: 'Mining.com',
         date: 'Wednesday, April 8, 2026',
@@ -191,7 +187,7 @@ function renderFallbackNews() {
     var html = newsArticlesData.map(function (n, i) {
       return '<div class="news-card" onclick="openNewsModal(' + i + ')">' +
         '<div class="news-card-inner">' +
-        '<div class="news-img-container"><img src="' + n.image + '" alt="News" class="news-img" crossorigin="anonymous"></div>' +
+        '<div class="news-img-container"><img src="' + n.image + '" alt="News" class="news-img" crossorigin="anonymous" onerror="this.src=\'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=500\'"></div>' +
         '<div class="news-body">' +
         '<div class="news-source">' + n.source + '</div>' +
         '<div class="news-headline">' + n.title + '</div>' +
