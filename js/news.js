@@ -117,46 +117,61 @@ function renderFallbackNews() {
     var grid = document.getElementById('newsGrid');
     if (!grid) return;
 
-    // Use high-quality placeholder images from Unsplash to avoid local pathing issues on deployment
-    var fallbackImg = "https://images.unsplash.com/photo-1610375461246-83df859d849d?q=80&w=800&auto=format&fit=crop";
-
     newsArticlesData = [
       {
         title: 'Gold prices hold near record highs as dollar weakens against major currencies',
-        description: 'Gold prices remained near record levels on Friday as the U.S. dollar continued its descent against a basket of major currencies.',
+        description: 'Gold prices remained near record levels on Friday as the U.S. dollar continued its descent against a basket of major currencies. Analysts suggest that continued geopolitical uncertainty is driving investors toward safe-haven assets.',
         content: 'Spot gold was trading at $3,085.20 per ounce, just shy of the all-time high of $3,102 set earlier this week.',
-        image: fallbackImg,
-        url: '#',
+        image: 'https://images.unsplash.com/photo-1610375461246-83df859d849d?q=80&w=800&auto=format&fit=crop',
+        url: 'https://www.reuters.com/markets/commodities/',
         source: 'Reuters',
-        date: 'Monday, March 31, 2026',
-        dateShort: 'Mar 31, 2026'
+        date: 'Monday, April 13, 2026',
+        dateShort: 'Apr 13, 2026'
       },
       {
         title: 'Central bank gold purchases reach five-year high in Q1 2026',
-        description: 'Central banks around the world bought a combined 290 tonnes of gold in the first quarter of 2026.',
-        image: fallbackImg,
-        url: '#',
+        description: 'Central banks around the world bought a combined 290 tonnes of gold in the first quarter of 2026, marking a significant shift in global reserve management. Developing nations led the surge in acquisitions.',
+        image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=800&auto=format&fit=crop',
+        url: 'https://www.bloomberg.com/markets/commodities',
         source: 'Bloomberg',
-        date: 'Sunday, March 30, 2026',
-        dateShort: 'Mar 30, 2026'
+        date: 'Sunday, April 12, 2026',
+        dateShort: 'Apr 12, 2026'
       },
       {
         title: 'XAU/USD technical analysis: Bulls maintain control above $3,000/oz',
-        description: 'Gold\'s technical picture remains strongly bullish as prices consolidate above the psychological $3,000 level.',
-        image: fallbackImg,
-        url: '#',
+        description: 'Gold\'s technical picture remains strongly bullish as prices consolidate above the psychological $3,000 level. Traders are watching for a breakout past the recent resistance at $3,150.',
+        image: 'https://images.unsplash.com/photo-1610375229632-c7158c35a537?q=80&w=800&auto=format&fit=crop',
+        url: 'https://www.fxstreet.com/news?q=gold',
         source: 'FXStreet',
-        date: 'Saturday, March 29, 2026',
-        dateShort: 'Mar 29, 2026'
+        date: 'Saturday, April 11, 2026',
+        dateShort: 'Apr 11, 2026'
       },
       {
         title: 'Gold ETF inflows surge amid market volatility',
-        description: 'Exchange-traded funds backed by gold saw their largest monthly inflows in over three years.',
-        image: fallbackImg,
-        url: '#',
+        description: 'Exchange-traded funds backed by gold saw their largest monthly inflows in over three years as investors repositioned portfolios for potential inflation risks and currency fluctuations in major markets.',
+        image: 'https://images.unsplash.com/photo-1533077154101-0bc4ba6d4f1a?q=80&w=800&auto=format&fit=crop',
+        url: 'https://www.cnbc.com/gold/',
         source: 'CNBC',
-        date: 'Friday, March 28, 2026',
-        dateShort: 'Mar 28, 2026'
+        date: 'Friday, April 10, 2026',
+        dateShort: 'Apr 10, 2026'
+      },
+      {
+        title: 'Physical gold demand spikes in Asia as festival season approaches',
+        description: 'Retail gold demand in major Asian markets has shown resilience despite record high prices. Buyers are increasingly opting for smaller denominations and digital gold products.',
+        image: 'https://images.unsplash.com/photo-1599584448508-5470df4a0e91?q=80&w=800&auto=format&fit=crop',
+        url: 'https://www.kitco.com/news/',
+        source: 'Kitco News',
+        date: 'Thursday, April 9, 2026',
+        dateShort: 'Apr 9, 2026'
+      },
+      {
+        title: 'Mining sector updates: New exploration projects announced in Australia',
+        description: 'Major mining companies have announced three new high-grade gold exploration projects in Western Australia, promising a boost to global production capacity over the next decade.',
+        image: 'https://images.unsplash.com/photo-1506452305024-9d3f02d1c9b2?q=80&w=800&auto=format&fit=crop',
+        url: 'https://www.mining.com/tag/gold/',
+        source: 'Mining.com',
+        date: 'Wednesday, April 8, 2026',
+        dateShort: 'Apr 8, 2026'
       }
     ];
 
@@ -202,14 +217,16 @@ function openNewsModal(index) {
   imgEl.src = article.image || '';
   imgEl.style.display = article.image ? '' : 'none';
   document.getElementById('newsModalSource').textContent = article.source;
-  document.getElementById('newsModalDate').textContent = article.date;
   document.getElementById('newsModalTitle').textContent = article.title;
-  document.getElementById('newsModalDesc').textContent = article.description;
+  document.getElementById('newsModalDate').textContent = article.date;
+  
+  var displayDesc = article.description || article.content || 'No description available for this article.';
+  document.getElementById('newsModalDesc').textContent = displayDesc;
 
   var linkEl = document.getElementById('newsModalLink');
-  if (article.url && article.url !== '#') {
+  if (article.url && article.url !== '#' && article.url !== '') {
     linkEl.href = article.url;
-    linkEl.style.display = 'inline-block';
+    linkEl.style.cssText = 'color: var(--gold-dark); flex-shrink: 0; text-decoration: none; font-size: 0.85rem; font-weight: 500; display: flex !important;';
   } else {
     linkEl.style.display = 'none';
   }
