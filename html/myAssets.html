@@ -224,8 +224,8 @@
                         <form id="assetForm">
                             <div class="modal-body p-4">
                                 <div class="mb-3">
-                                    <label class="form-label">Type</label>
-                                    <select class="form-select" id="typeSelect" onchange="toggleFormFields()" required>
+                                    <label for="typeSelect" class="form-label">Type</label>
+                                    <select class="form-select" id="typeSelect" name="typeSelect" onchange="toggleFormFields()" autocomplete="off" required>
                                         <option value="" selected disabled hidden>Select Type...</option>
                                         <option value="Jewelry">Jewelry</option>
                                         <option value="Bars">Bars</option>
@@ -233,16 +233,16 @@
                                     </select>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Karat</label>
-                                    <select class="form-select" required>
+                                    <label for="karatSelect" class="form-label">Karat</label>
+                                    <select class="form-select" id="karatSelect" name="karatSelect" autocomplete="off" required>
                                         <option value="24K">24 K</option>
                                         <option value="21K" selected>21 K</option>
                                         <option value="18K">18 K</option>
                                     </select>
                                 </div>
                                 <div id="jewelryOptions" class="mb-3 hidden-field">
-                                    <label class="form-label">Category</label>
-                                    <select class="form-select" id="jewelryCategory">
+                                    <label for="jewelryCategory" class="form-label">Category</label>
+                                    <select class="form-select" id="jewelryCategory" name="jewelryCategory" autocomplete="off">
                                         <option value="Ring">Ring</option>
                                         <option value="Necklace">Necklace</option>
                                         <option value="Watch">Watch</option>
@@ -251,30 +251,30 @@
                                     </select>
                                 </div>
                                 <div id="coinOptions" class="mb-3 hidden-field">
-                                    <label class="form-label">Coin Type</label>
-                                    <select class="form-select" id="coinCategory">
+                                    <label for="coinCategory" class="form-label">Coin Type</label>
+                                    <select class="form-select" id="coinCategory" name="coinCategory" autocomplete="off">
                                         <option value="Rashadi">Rashadi</option>
                                         <option value="English">English</option>
                                     </select>
                                 </div>
                                 <div class="row g-3">
                                     <div class="col-6">
-                                        <label class="form-label">Buy Price (JOD)</label>
-                                        <input type="number" step="0.01" class="form-control" placeholder="0.00" required>
+                                        <label for="assetBuyPrice" class="form-label">Buy Price (JOD)</label>
+                                        <input type="number" step="0.01" id="assetBuyPrice" name="assetBuyPrice" class="form-control" placeholder="0.00" autocomplete="off" required>
                                     </div>
                                     <div class="col-6">
-                                        <label class="form-label">Weight (g)</label>
-                                        <input type="number" step="0.01" class="form-control" placeholder="1.00" required>
+                                        <label for="assetWeight" class="form-label">Weight (g)</label>
+                                        <input type="number" step="0.01" id="assetWeight" name="assetWeight" class="form-control" placeholder="1.00" autocomplete="off" required>
                                     </div>
                                 </div>
                                 <div class="my-3">
-                                    <label class="form-label">Purchase Date</label>
-                                    <input type="date" class="form-control" id="purchaseDate" required>
+                                    <label for="purchaseDate" class="form-label">Purchase Date</label>
+                                    <input type="date" class="form-control" id="purchaseDate" name="purchaseDate" autocomplete="off" required>
                                     <small class="text-muted">Future dates are disabled.</small>
                                 </div>
                                 <div class="mb-2">
-                                    <label class="form-label">Description / Custom Name</label>
-                                    <input type="text" class="form-control" placeholder="e.g. Wedding Gift, Family Heirloom">
+                                    <label for="assetDescription" class="form-label">Description / Custom Name</label>
+                                    <input type="text" id="assetDescription" name="assetDescription" class="form-control" placeholder="e.g. Wedding Gift, Family Heirloom" autocomplete="off">
                                 </div>
                             </div>
                             <div class="modal-footer border-0 p-4 pt-0">
@@ -360,7 +360,7 @@
                             <button type="button" class="btn-close btn-close-white mb-3" data-bs-dismiss="modal"></button>
                         </div>
                         <div style="background:linear-gradient(135deg,#1C1A14 0%,#3d2e00 70%,#7a5a10 100%); padding:0 24px 24px; display:flex; justify-content:center;">
-                            <img id="detailImg" src="" alt="Asset" style="width:90px;height:90px;border-radius:50%;border:3px solid var(--gold-pale);object-fit:cover;background:rgba(201,149,42,0.15);">
+                            <img id="detailImg" src="" alt="Asset" crossorigin="anonymous" style="width:90px;height:90px;border-radius:50%;border:3px solid var(--gold-pale);object-fit:cover;background:rgba(201,149,42,0.15);">
                         </div>
                         <div style="padding:20px 24px 24px;">
                             <h5 class="serif fw-bold mb-1" id="detailName">—</h5>

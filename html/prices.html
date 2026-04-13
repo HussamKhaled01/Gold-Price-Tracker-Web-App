@@ -263,12 +263,12 @@
         <div class="calculator-card">
           <div class="calc-row">
             <div class="calc-group">
-              <label>Weight (grams)</label>
-              <input type="number" id="calcWeight" class="calc-input" placeholder="e.g. 10" oninput="calculate()" />
+              <label for="calcWeight">Weight (grams)</label>
+              <input type="number" id="calcWeight" name="calcWeight" class="calc-input" placeholder="e.g. 10" oninput="calculate()" autocomplete="off" />
             </div>
             <div class="calc-group">
-              <label>Karat</label>
-              <select id="calcKarat" class="calc-input" onchange="calculate()">
+              <label for="calcKarat">Karat</label>
+              <select id="calcKarat" name="calcKarat" class="calc-input" onchange="calculate()" autocomplete="off">
                 <option value="24">24K</option>
                 <option value="21" selected>21K</option>
                 <option value="18">18K</option>
@@ -303,14 +303,14 @@
           </div>
           <form class="mt-4" id="loginForm">
             <div class="mb-2">
-              <label class="form-label text-muted mb-1">Email Address</label>
-              <input type="text" class="form-control" id="loginEmail" name="loginEmail" placeholder="Enter your email">
+              <label for="loginEmail" class="form-label text-muted mb-1">Email Address</label>
+              <input type="email" class="form-control" id="loginEmail" name="loginEmail" placeholder="Enter your email" autocomplete="email" required>
               <span class="error-span" id="error-loginEmail"></span>
             </div>
             <div class="mb-4">
-              <label class="form-label text-muted mb-1">Password</label>
+              <label for="loginPassword" class="form-label text-muted mb-1">Password</label>
               <input type="password" class="form-control" id="loginPassword" name="loginPassword"
-                placeholder="Enter your password">
+                placeholder="Enter your password" autocomplete="current-password" required>
               <span class="error-span" id="error-loginPassword"></span>
             </div>
             <div class="d-grid mb-4">
@@ -341,28 +341,29 @@
           </div>
           <form class="mt-4" id="registerForm">
             <div class="mb-3">
-              <label class="form-label text-muted mb-1">First Name</label>
-              <input type="text" class="form-control" id="fName" name="fName" placeholder="Enter your first name">
+              <label for="fName" class="form-label text-muted mb-1">First Name</label>
+              <input type="text" class="form-control" id="fName" name="fName" placeholder="Enter your first name" autocomplete="given-name" required>
               <span class="error-span" id="error-fName"></span>
             </div>
             <div class="mb-3">
-              <label class="form-label text-muted mb-1">Last Name</label>
-              <input type="text" class="form-control" id="lName" name="lName" placeholder="Enter your last name">
+              <label for="lName" class="form-label text-muted mb-1">Last Name</label>
+              <input type="text" class="form-control" id="lName" name="lName" placeholder="Enter your last name" autocomplete="family-name" required>
               <span class="error-span" id="error-lName"></span>
             </div>
             <div class="mb-1">
-              <label class="form-label text-muted mb-1">Email Address</label>
-              <input type="text" class="form-control" id="registerEmail" name="email"
-                placeholder="Enter your email address">
+              <label for="registerEmail" class="form-label text-muted mb-1">Email Address</label>
+              <input type="email" class="form-control" id="registerEmail" name="email"
+                placeholder="Enter your email address" autocomplete="email" required>
               <span class="hint-span" id="error-registerEmail"></span>
             </div>
             <div class="mb-3">
-              <input type="text" class="form-control" id="confirmEmail" name="confirmEmail" placeholder="Confirm Email">
+              <label for="confirmEmail" class="visually-hidden">Confirm Email</label>
+              <input type="email" class="form-control" id="confirmEmail" name="confirmEmail" placeholder="Confirm Email" autocomplete="email" required>
               <span class="error-span" id="error-confirmEmail"></span>
             </div>
             <div class="mb-3">
-              <label class="form-label text-muted mb-1">Gender</label>
-              <select id="gender" name="gender" class="form-select">
+              <label for="gender" class="form-label text-muted mb-1">Gender</label>
+              <select id="gender" name="gender" class="form-select" autocomplete="sex" required>
                 <option value="" disabled selected hidden>Select Gender</option>
                 <option value="m">Male</option>
                 <option value="f">Female</option>
@@ -370,14 +371,15 @@
               <span class="error-span" id="error-gender"></span>
             </div>
             <div class="mb-1">
-              <label class="form-label text-muted mb-1">Password</label>
+              <label for="registerPassword" class="form-label text-muted mb-1">Password</label>
               <input type="password" class="form-control" id="registerPassword" name="password"
-                placeholder="Enter your password">
+                placeholder="Enter your password" autocomplete="new-password" required>
               <span class="hint-span" id="error-registerPassword"></span>
             </div>
             <div class="mb-4">
+              <label for="confirmPassword" class="visually-hidden">Confirm Password</label>
               <input type="password" class="form-control" id="confirmPassword" name="confirmPassword"
-                placeholder="Confirm Password">
+                placeholder="Confirm Password" autocomplete="new-password" required>
               <span class="error-span" id="error-confirmPassword"></span>
             </div>
             <div class="d-grid mb-4">
