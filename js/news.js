@@ -13,8 +13,8 @@ async function loadNews() {
   var grid = document.getElementById('newsGrid');
   if (!grid) return;
 
-  var savedNewsStr = localStorage.getItem('savedGoldNewsV4');
-  var savedNewsTime = localStorage.getItem('savedGoldNewsTimeV4');
+  var savedNewsStr = localStorage.getItem('savedGoldNewsV5');
+  var savedNewsTime = localStorage.getItem('savedGoldNewsTimeV5');
   var now = new Date().getTime();
 
   // 1. Try Cache First
@@ -26,8 +26,8 @@ async function loadNews() {
         return;
       }
     } catch (e) {
-      localStorage.removeItem('savedGoldNewsV4');
-      localStorage.removeItem('savedGoldNewsTimeV4');
+      localStorage.removeItem('savedGoldNewsV5');
+      localStorage.removeItem('savedGoldNewsTimeV5');
     }
   }
 
@@ -59,8 +59,8 @@ async function loadNews() {
     data = rawData;
 
     if (data && data.articles && data.articles.length > 0) {
-      localStorage.setItem('savedGoldNewsV4', JSON.stringify(data));
-      localStorage.setItem('savedGoldNewsTimeV4', now.toString());
+      localStorage.setItem('savedGoldNewsV5', JSON.stringify(data));
+      localStorage.setItem('savedGoldNewsTimeV5', now.toString());
       renderNews(data.articles);
     } else {
       renderFallbackNews();
@@ -97,10 +97,14 @@ function renderNews(articles) {
     });
 
     var html = newsArticlesData.map(function (a, i) {
+      var imgUrl = a.image || 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=500&auto=format&fit=crop';
+      // Cache bust the image URL to bypass cached CORS blocks
+      var bustedImg = imgUrl + (imgUrl.includes('?') ? '&' : '?') + 'cb=' + Date.now();
+
       return '<div class="news-card" onclick="openNewsModal(' + i + ')">' +
         '<div class="news-card-inner">' +
         '<div class="news-img-container">' + 
-        '<img src="' + a.image + '" alt="" class="news-img" onerror="this.src=\'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=500&auto=format&fit=crop\'">' +
+        '<img src="' + bustedImg + '" alt="" class="news-img" onerror="this.src=\'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=500&auto=format&fit=crop\'">' +
         '</div>' +
         '<div class="news-body">' +
         '<div class="news-source">' + a.source + '</div>' +
@@ -185,9 +189,10 @@ function renderFallbackNews() {
     ];
 
     var html = newsArticlesData.map(function (n, i) {
+      var bustedImg = n.image + (n.image.includes('?') ? '&' : '?') + 'cb=' + Date.now();
       return '<div class="news-card" onclick="openNewsModal(' + i + ')">' +
         '<div class="news-card-inner">' +
-        '<div class="news-img-container"><img src="' + n.image + '" alt="News" class="news-img" onerror="this.src=\'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=500\'"></div>' +
+        '<div class="news-img-container"><img src="' + bustedImg + '" alt="News" class="news-img" onerror="this.src=\'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=500\'"></div>' +
         '<div class="news-body">' +
         '<div class="news-source">' + n.source + '</div>' +
         '<div class="news-headline">' + n.title + '</div>' +
@@ -223,7 +228,8 @@ function openNewsModal(index) {
   }
 
   var imgEl = document.getElementById('newsModalImg');
-  imgEl.src = article.image || '';
+  var bustedImg = article.image + (article.image && article.image.includes('?') ? '&' : '?') + 'cb=' + Date.now();
+  imgEl.src = article.image ? bustedImg : '';
   imgEl.style.display = article.image ? '' : 'none';
   document.getElementById('newsModalSource').textContent = article.source;
   document.getElementById('newsModalTitle').textContent = article.title;
