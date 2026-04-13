@@ -100,7 +100,7 @@ function renderNews(articles) {
       return '<div class="news-card" onclick="openNewsModal(' + i + ')">' +
         '<div class="news-card-inner">' +
         '<div class="news-img-container">' + 
-        '<img src="' + a.image + '" alt="" class="news-img" crossorigin="anonymous" onerror="this.src=\'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=500&auto=format&fit=crop\'">' +
+        '<img src="' + a.image + '" alt="" class="news-img" onerror="this.src=\'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=500&auto=format&fit=crop\'">' +
         '</div>' +
         '<div class="news-body">' +
         '<div class="news-source">' + a.source + '</div>' +
@@ -187,7 +187,7 @@ function renderFallbackNews() {
     var html = newsArticlesData.map(function (n, i) {
       return '<div class="news-card" onclick="openNewsModal(' + i + ')">' +
         '<div class="news-card-inner">' +
-        '<div class="news-img-container"><img src="' + n.image + '" alt="News" class="news-img" crossorigin="anonymous" onerror="this.src=\'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=500\'"></div>' +
+        '<div class="news-img-container"><img src="' + n.image + '" alt="News" class="news-img" onerror="this.src=\'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=500\'"></div>' +
         '<div class="news-body">' +
         '<div class="news-source">' + n.source + '</div>' +
         '<div class="news-headline">' + n.title + '</div>' +
