@@ -7,7 +7,6 @@ function getSessionUser() {
             return null;
         }
     } catch (e) {
-        console.error("Session parsing error:", e);
         return null;
     }
 }
@@ -56,61 +55,54 @@ function updateNavbar(isLoggedIn) {
     var authButtons = document.getElementById('navAuthButtons');
     var profileDropdown = document.getElementById('navProfileDropdown');
 
-    // NEW navbar style (index + prices + myAssets)
-    if (authButtons === null || profileDropdown === null) {
-        updateMobileMenu(isLoggedIn);
-        return;
+    if (authButtons) {
+        authButtons.style.display = isLoggedIn ? 'none' : 'flex';
     }
 
-    if (isLoggedIn) {
-        authButtons.style.display = 'none';
-        profileDropdown.style.display = 'flex';
+    if (profileDropdown) {
+        profileDropdown.style.display = isLoggedIn ? 'flex' : 'none';
 
-        // Populate name in trigger
-        var nameEl = document.getElementById('navProfileName');
-        if (nameEl) nameEl.textContent = currentUser.firstName || '';
+        if (isLoggedIn) {
+            // Populate name in trigger
+            var nameEl = document.getElementById('navProfileName');
+            if (nameEl) nameEl.textContent = currentUser.firstName || '';
 
-        // Helper to resolve paths regardless of whether we are in root or /html/ folder
-        var resolveImagePath = function(path) {
-            // If we are at the root (index.html), we remove '../' from the assets path
-            var isRoot = window.location.pathname.endsWith('index.html') && !window.location.pathname.includes('/html/');
-            if (isRoot && path.startsWith('../')) {
-                return path.substring(3);
+            // Helper to resolve paths regardless of whether we are in root or /html/ folder
+            var resolveImagePath = function (path) {
+                var isRoot = window.location.pathname.endsWith('index.html') && !window.location.pathname.includes('/html/');
+                if (isRoot && path.startsWith('../')) {
+                    return path.substring(3);
+                }
+                return path;
+            };
+
+            // Set avatar based on gender (handling 'm', 'M', 'male', 'Male')
+            var imgEl = document.getElementById('navProfileImg');
+            if (imgEl) {
+                var g = (currentUser.gender || '').toLowerCase();
+                var avatarPath = (g === 'm' || g === 'male') ? '../assets/images/male.png' : '../assets/images/female.png';
+                imgEl.src = resolveImagePath(avatarPath);
             }
-            return path;
-        };
 
-        // Set avatar based on gender (handling 'm', 'M', 'male', 'Male')
-        var imgEl = document.getElementById('navProfileImg');
-        if (imgEl) {
-            var g = (currentUser.gender || '').toLowerCase();
-            var avatarPath = (g === 'm' || g === 'male') ? '../assets/images/male.png' : '../assets/images/female.png';
-            imgEl.src = resolveImagePath(avatarPath);
+            // Populate profile modal fields
+            var joined = currentUser.joinedDate || new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            var setModal = function (id, val) { var el = document.getElementById(id); if (el) el.textContent = val || '—'; };
+            setModal('profileModalName', (currentUser.firstName || '') + ' ' + (currentUser.lastName || ''));
+            setModal('profileModalEmail', currentUser.email);
+            setModal('profileModalFirst', currentUser.firstName);
+            setModal('profileModalLast', currentUser.lastName);
+            setModal('profileModalEmail2', currentUser.email);
+            setModal('profileModalJoined', joined);
+
+            var genderEl = document.getElementById('profileModalGender');
+            if (genderEl) genderEl.textContent = currentUser.gender === 'm' ? 'Male' : currentUser.gender === 'f' ? 'Female' : '—';
+
+            var picEl = document.getElementById('profileModalPic');
+            if (picEl) {
+                var modalPath = (g === 'm' || g === 'male') ? '../assets/images/male.png' : '../assets/images/female.png';
+                picEl.src = resolveImagePath(modalPath);
+            }
         }
-
-        // Populate profile modal fields
-        var joined = currentUser.joinedDate || new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-        var setModal = function(id, val) { var el = document.getElementById(id); if (el) el.textContent = val || '—'; };
-        setModal('profileModalName', (currentUser.firstName || '') + ' ' + (currentUser.lastName || ''));
-        setModal('profileModalEmail', currentUser.email);
-        setModal('profileModalFirst', currentUser.firstName);
-        setModal('profileModalLast', currentUser.lastName);
-        setModal('profileModalEmail2', currentUser.email);
-        setModal('profileModalJoined', joined);
-
-        var genderEl = document.getElementById('profileModalGender');
-        if (genderEl) genderEl.textContent = currentUser.gender === 'm' ? 'Male' : currentUser.gender === 'f' ? 'Female' : '—';
-
-        var g = (currentUser.gender || '').toLowerCase();
-        var picEl = document.getElementById('profileModalPic');
-        if (picEl) {
-            var modalPath = (g === 'm' || g === 'male') ? '../assets/images/male.png' : '../assets/images/female.png';
-            picEl.src = resolveImagePath(modalPath);
-        }
-
-    } else {
-        authButtons.style.display = 'flex';
-        profileDropdown.style.display = 'none';
     }
 
     updateMobileMenu(isLoggedIn);

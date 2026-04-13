@@ -146,13 +146,4 @@ document.addEventListener('DOMContentLoaded', function () {
   // Visual effects
   if (typeof initSparkles === 'function') initSparkles();
   if (typeof attachBurstToButtons === 'function') setTimeout(attachBurstToButtons, 500);
-
-  // Set default chart date range to last 30 days
-  var today = new Date();
-  var from = new Date();
-  from.setDate(today.getDate() - 30);
-  var toEl = document.getElementById('chartDateTo');
-  var fromEl = document.getElementById('chartDateFrom');
-  if (toEl) toEl.value = today.toISOString().split('T')[0];
-  if (fromEl) fromEl.value = from.toISOString().split('T')[0];
 });

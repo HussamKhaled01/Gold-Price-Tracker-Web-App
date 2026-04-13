@@ -2,7 +2,7 @@
 // IDEAS TO NOT HARDCODE: 
 // 1. Fetch from a secure backend endpoint where the key is stored securely.
 // 2. Use a build pipeline (e.g. Webpack/Vite) with an .env file for environment variables.
-var NEWS_API_KEY = '4607e42e4f5637b49a3af563e17e42b2';
+var NEWS_API_KEY = 'ca81b03378b60b782adadf2333a2c74f';
 var NEWS_API_URL = 'https://gnews.io/api/v4/search?q=gold+price+OR+gold+market+OR+gold+forecast&lang=en&max=9&apikey=' + NEWS_API_KEY;
 
 // ---- NEWS CAROUSEL -----------------------------------------------------------------------------------------------------------
@@ -22,12 +22,10 @@ async function loadNews() {
     try {
       var cachedData = JSON.parse(savedNewsStr);
       if (cachedData && cachedData.articles && cachedData.articles.length > 0) {
-        console.log("Loading news from cache...");
         renderNews(cachedData.articles);
         return;
       }
     } catch (e) {
-      console.warn("Failed to parse cached news, clearing storage.", e);
       localStorage.removeItem('savedGoldNewsV3');
       localStorage.removeItem('savedGoldNewsTimeV3');
     }
@@ -35,7 +33,6 @@ async function loadNews() {
 
   // 2. Try Fetch with Timeout
   var isGitHubPages = window.location.hostname.includes('github.io');
-  console.log("Fetching live news from GNews... (Production Mode: " + isGitHubPages + ")");
 
   try {
     // If on GitHub Pages, we know GNews often blocks CORS. 
@@ -48,26 +45,18 @@ async function loadNews() {
     clearTimeout(timeoutId);
 
     if (!res.ok) {
-      console.warn("News API response error:", res.status, res.statusText);
       throw new Error('News API response not OK: ' + res.status);
     }
     
     const data = await res.json();
     if (data && data.articles && data.articles.length > 0) {
-      console.log("Live news fetched successfully. Count:", data.articles.length);
       localStorage.setItem('savedGoldNewsV3', JSON.stringify(data));
       localStorage.setItem('savedGoldNewsTimeV3', now.toString());
       renderNews(data.articles);
     } else {
-      console.warn("News API returned zero articles. Triggering fallback.");
       renderFallbackNews();
     }
   } catch (error) {
-    if (error.name === 'AbortError') {
-      console.warn("News fetch timed out (" + (isGitHubPages ? 'Production' : 'Local') + "). Triggering fallback.");
-    } else {
-      console.warn("Error fetching news from API (likely CORS on Deployment):", error);
-    }
     renderFallbackNews();
   }
 }
@@ -119,7 +108,6 @@ function renderNews(articles) {
     updateNewsCarousel();
     initNewsArrows();
   } catch (err) {
-    console.error("Critical error in renderNews, falling back:", err);
     renderFallbackNews();
   }
 }
@@ -191,7 +179,6 @@ function renderFallbackNews() {
     updateNewsCarousel();
     initNewsArrows();
   } catch (err) {
-    console.error("Total failure in news rendering:", err);
     if (grid) grid.innerHTML = '<p style="color:var(--gold);padding:20px;text-align:center;">Latest news currently unavailable. Please check back later.</p>';
   }
 }

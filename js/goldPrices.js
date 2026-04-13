@@ -1,5 +1,5 @@
 // ---- CONFIG ------------------------------------------------------------------------------------------------------------
-var GOLD_API_KEY = '9404f38900e589a465c2752aba93bd61991e8b4d1c484993fabd35fb438f4829';
+var GOLD_API_KEY = 'a88415e202d8189ae6cd32920f1bf6f7b9b4ac5aae0536b455f5b8bdb2ccc632';
 var GOLD_API_URL = 'https://api.gold-api.com/price/XAU';
 
 // Currency
@@ -50,7 +50,6 @@ function fetchGoldPrice() {
       }
     })
     .catch(function (err) {
-      console.warn('Gold API error, using demo price:', err);
       // Demo fallback price
       var prevPrice = currentOzPriceUSD;
       currentOzPriceUSD = 3020 + (Math.random() * 20 - 10);
@@ -360,7 +359,6 @@ function fetchChartHistory(startTimestamp, endTimestamp, groupBy, callback) {
   })
     .then(function (res) {
       if (res.status === 429) {
-        console.warn('History API rate limit (429) hit. Generating synthetic data.');
         throw new Error('429');
       }
       return res.json();
@@ -374,8 +372,6 @@ function fetchChartHistory(startTimestamp, endTimestamp, groupBy, callback) {
       callback(arr);
     })
     .catch(function (err) {
-      console.warn('History API error or rate limit:', err);
-      
       // If 429 or other error, generate synthetic data if no cache
       if (err.message === '429' || !cached || !cached.data) {
         var syntheticData = [];
@@ -437,40 +433,22 @@ function parseHistoryToChartData(arr, groupBy) {
 
 // Called once on page load — fetches last 30 days by default
 function loadChartData() {
-  var now = Math.floor(Date.now() / 1000);
-  var thirtyDaysAgo = now - (30 * 24 * 60 * 60);
-
-  // Pre-fill date inputs if present
-  var today = new Date();
-  var from = new Date();
-  from.setDate(today.getDate() - 30);
   var toEl = document.getElementById('chartDateTo');
   var fromEl = document.getElementById('chartDateFrom');
-  if (toEl && !toEl.value) toEl.value = today.toISOString().split('T')[0];
-  if (fromEl && !fromEl.value) fromEl.value = from.toISOString().split('T')[0];
+  
+  // Default range: 2026-01-01 to 2026-04-01
+  var fromDate = new Date('2026-01-01');
+  var toDate = new Date('2026-04-01');
 
-  fetchChartHistory(thirtyDaysAgo, now, 'day', function (arr) {
-    if (arr.length === 0) {
-      // Nothing from API — show empty chart with a status message
-      chartData = { labels: [], usd: [], jod: [] };
-      renderChart();
-      setChartStatus('No history data available');
-      return;
-    }
-    chartData = parseHistoryToChartData(arr, 'day');
-    renderChart();
-    setChartStatus('');
-  });
+  if (toEl && !toEl.value) toEl.value = toDate.toISOString().split('T')[0];
+  if (fromEl && !fromEl.value) fromEl.value = fromDate.toISOString().split('T')[0];
 
-  // Schedule auto-refresh every 1 hour
+  // Use the common filtering logic to ensure consistency with "Reset" button
+  filterChartByDate();
+
+  // Schedule auto-refresh every 1 hour (refreshes the current view if applicable)
   setInterval(function () {
-    var nowTs = Math.floor(Date.now() / 1000);
-    var fromTs = nowTs - (30 * 24 * 60 * 60);
-    fetchChartHistory(fromTs, nowTs, 'day', function (arr) {
-      if (arr.length === 0) return;
-      chartData = parseHistoryToChartData(arr, 'day');
-      renderChart();
-    });
+    filterChartByDate(); // Re-runs with whatever is in the inputs
   }, HISTORY_CACHE_TTL);
 
   // ---- CHART RESPONSIVENESS FIX ----------------------------------------------------------------------------------
@@ -639,11 +617,10 @@ function filterChartByDate() {
 function resetChartFilter() {
   var fromEl = document.getElementById('chartDateFrom');
   var toEl = document.getElementById('chartDateTo');
-  var today = new Date();
-  var from = new Date();
-  from.setDate(today.getDate() - 30);
-  if (fromEl) fromEl.value = from.toISOString().split('T')[0];
-  if (toEl) toEl.value = today.toISOString().split('T')[0];
+  var fromDate = new Date('2026-01-01');
+  var toDate = new Date('2026-04-01');
+  if (fromEl) fromEl.value = fromDate.toISOString().split('T')[0];
+  if (toEl) toEl.value = toDate.toISOString().split('T')[0];
   filterChartByDate();
 }
 

@@ -478,24 +478,41 @@ function openAssetDetail(assetId) {
     new bootstrap.Modal(document.getElementById('assetDetailModal')).show();
 }
 
+function showToast(message) {
+    const toastEl = document.getElementById('successToast');
+    const toastMsg = document.getElementById('toastMessage');
+    if (toastEl && toastMsg) {
+        toastMsg.textContent = message;
+        const toast = new bootstrap.Toast(toastEl);
+        toast.show();
+    }
+}
+
 function deleteAsset(assetId) {
     const key  = `assets_${assetUser.email}`;
     let assets = getUserAssets();
     assets     = assets.filter(a => a.id !== assetId);
     localStorage.setItem(key, JSON.stringify(assets));
 
+    // Hide both modals
+    bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal'))?.hide();
     bootstrap.Modal.getInstance(document.getElementById('assetDetailModal'))?.hide();
+    
     updatePortfolioSummary(getUserAssets());
     renderInventory(getUserAssets());
     refreshTicker();
+
+    showToast('The asset was successfully deleted from your vault.');
 }
 
 document.getElementById('deleteAssetBtn')?.addEventListener('click', () => {
     if (!selectedAssetId) return;
+    // Instead of confirm(), show the confirmDeleteModal
+    new bootstrap.Modal(document.getElementById('confirmDeleteModal')).show();
+});
 
-    const confirmed = confirm('Are you sure you want to delete this asset?\nThis action cannot be undone.');
-    if (confirmed) {
+document.getElementById('confirmDeleteFinalBtn')?.addEventListener('click', () => {
+    if (selectedAssetId) {
         deleteAsset(selectedAssetId);
-        alert('✅ The asset was successfully deleted.');
     }
 });
